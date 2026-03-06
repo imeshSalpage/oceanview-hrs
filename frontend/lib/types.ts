@@ -61,3 +61,26 @@ export interface UserResponse {
   role: Role;
   createdAt: string;
 }
+
+export interface RoomTypeDetails {
+  roomType: RoomType;
+  name: string;
+  description: string;
+  ratePerNight: number;
+  totalRooms: number;
+  maxGuests: number;
+  sizeSqm: number;
+  bedType: string;
+  amenities: string[];
+  facilities: string[];
+  imageUrls: string[];
+  updatedAt?: string;
+}
+
+export interface RoomAvailabilityResponse {
+  roomType: RoomType;
+  totalRooms: number;
+  bookedRooms: number;
+  availableRooms: number;
+  available: boolean;
+}
