@@ -2,12 +2,22 @@
 
 :root {
   color-scheme: light;
-}
-
-@media (prefers-color-scheme: dark) {
-  :root {
-    color-scheme: dark;
-  }
+  /* Ocean palette */
+  --ocean-50:  #ecfeff;
+  --ocean-100: #cffafe;
+  --ocean-200: #a5f3fc;
+  --ocean-300: #67e8f9;
+  --ocean-400: #22d3ee;
+  --ocean-500: #06b6d4;
+  --ocean-600: #0891b2;
+  --ocean-700: #0e7490;
+  --ocean-800: #155e75;
+  --ocean-900: #164e63;
+  --deep:      #0c1629;
+  --sand:      #fffbeb;
+  /* Glass tokens */
+  --glass-bg:  rgba(255, 255, 255, 0.72);
+  --glass-border: rgba(186, 230, 253, 0.55);
 }
 
 * {
@@ -16,8 +26,161 @@
 
 body {
   font-family: var(--font-geist-sans), system-ui, sans-serif;
+  /* Multi-layer ocean atmosphere */
+  background-color: #e0f7fa;
+  background-image:
+    linear-gradient(rgba(0, 0, 0, 0.10), rgba(0, 0, 0, 0.10)),
+    linear-gradient(180deg, rgba(240, 251, 255, 0.82) 0%, rgba(232, 248, 253, 0.78) 30%, rgba(244, 253, 255, 0.84) 65%, rgba(248, 252, 255, 0.9) 100%),
+    url("https://images.unsplash.com/photo-1507525428034-b723cf961d3e?auto=format&fit=crop&w=2200&q=80"),
+    radial-gradient(ellipse 120% 55% at 50% -10%, rgba(6, 182, 212, 0.30) 0%, transparent 65%),
+    radial-gradient(ellipse 80% 40% at 80% 110%, rgba(14, 116, 144, 0.20) 0%, transparent 60%),
+    radial-gradient(ellipse 70% 35% at 10% 90%,  rgba(34, 211, 238, 0.15) 0%, transparent 55%);
+  background-size: cover, cover, cover, auto, auto, auto;
+  background-position: center, center, center, center, center, center;
+  background-repeat: no-repeat, no-repeat, no-repeat, no-repeat, no-repeat, no-repeat;
+  background-attachment: fixed;
+  color: var(--deep);
+  min-height: 100vh;
 }
 
 a {
   transition: color 150ms ease;
+  color: var(--ocean-700);
+}
+a:hover {
+  color: var(--ocean-600);
+}
+
+::selection {
+  background: var(--ocean-200);
+  color: var(--ocean-900);
+}
+
+/* ─── Animated ocean-wave page wrapper ─────────────────────── */
+.ocean-wave {
+  position: relative;
+  isolation: isolate;
+  overflow: hidden;
+}
+
+/* top shimmer orb */
+.ocean-wave::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  z-index: -1;
+  background:
+    radial-gradient(ellipse 90% 35% at 50% -5%, rgba(6, 182, 212, 0.22) 0%, transparent 70%),
+    radial-gradient(ellipse 50% 20% at 85% 15%,  rgba(14, 116, 144, 0.14) 0%, transparent 60%),
+    radial-gradient(ellipse 40% 18% at 10% 80%,  rgba(34, 211, 238, 0.12) 0%, transparent 55%);
+}
+
+/* animated shimmer sweep */
+.ocean-wave::after {
+  content: "";
+  position: absolute;
+  top: -30%;
+  left: -60%;
+  width: 220%;
+  height: 70%;
+  background: linear-gradient(
+    105deg,
+    transparent 35%,
+    rgba(103, 232, 249, 0.06) 50%,
+    transparent 65%
+  );
+  animation: ocean-shimmer 8s ease-in-out infinite alternate;
+  pointer-events: none;
+  z-index: -1;
+}
+
+@keyframes ocean-shimmer {
+  0%   { transform: translateX(-15%) skewX(-3deg); opacity: 0.6; }
+  100% { transform: translateX(15%)  skewX(3deg);  opacity: 1; }
+}
+
+/* ─── Frosted-glass surface card ───────────────────────────── */
+.ocean-surface {
+  background: linear-gradient(
+    135deg,
+    rgba(224, 242, 254, 0.85) 0%,
+    rgba(255, 255, 255, 0.92) 100%
+  );
+  border: 1px solid var(--glass-border);
+  box-shadow:
+    0 4px 6px  -1px rgba(14, 116, 144, 0.08),
+    0 20px 40px -20px rgba(14, 116, 144, 0.18);
+  backdrop-filter: blur(8px);
+}
+
+/* ─── Hero banner gradient ──────────────────────────────────── */
+.hero-ocean {
+  background: linear-gradient(
+    135deg,
+    #0e7490 0%,
+    #0891b2 35%,
+    #06b6d4 70%,
+    #22d3ee 100%
+  );
+}
+
+/* ─── Section divider wave SVG helper ──────────────────────── */
+.wave-divider {
+  overflow: hidden;
+  line-height: 0;
+}
+
+/* ─── Depth card  (used on room cards) ──────────────────────── */
+.card-ocean {
+  background: var(--glass-bg);
+  border: 1px solid var(--glass-border);
+  box-shadow:
+    0 1px 3px  rgba(14, 116, 144, 0.06),
+    0 10px 28px -12px rgba(14, 116, 144, 0.22);
+  backdrop-filter: blur(6px);
+  transition: box-shadow 0.25s ease, transform 0.25s ease;
+}
+.card-ocean:hover {
+  box-shadow:
+    0 4px 12px rgba(14, 116, 144, 0.12),
+    0 24px 40px -12px rgba(14, 116, 144, 0.30);
+  transform: translateY(-2px);
+}
+
+/* ─── Pill badge  ─────────────────────────────────────────────── */
+.ocean-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 2px 10px;
+  border-radius: 9999px;
+  font-size: 0.7rem;
+  font-weight: 600;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  background: rgba(6, 182, 212, 0.12);
+  color: var(--ocean-700);
+  border: 1px solid rgba(6, 182, 212, 0.25);
+}
+
+/* ─── Input focus ring ──────────────────────────────────────── */
+.ocean-input {
+  width: 100%;
+  border-radius: 0.5rem;
+  border: 1px solid rgba(186, 230, 253, 0.8);
+  background: rgba(255, 255, 255, 0.85);
+  padding: 0.5rem 0.75rem;
+  font-size: 0.875rem;
+  color: #0c1629;
+  box-shadow: 0 1px 3px rgba(14, 116, 144, 0.05) inset;
+  outline: none;
+  transition: border-color 0.15s, box-shadow 0.15s;
+}
+.ocean-input:focus {
+  border-color: var(--ocean-400);
+  box-shadow: 0 0 0 3px rgba(34, 211, 238, 0.18);
+}
+.ocean-input::placeholder {
+  color: #94a3b8;
 }
