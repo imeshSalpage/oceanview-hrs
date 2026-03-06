@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.Optional;
 
 import org.springframework.data.mongodb.repository.MongoRepository;
+import org.springframework.data.mongodb.repository.Query;
 
 public interface ReservationRepository extends MongoRepository<Reservation, String> {
     Optional<Reservation> findByReservationNo(String reservationNo);
@@ -14,4 +15,7 @@ public interface ReservationRepository extends MongoRepository<Reservation, Stri
     List<Reservation> findByCheckInDateBetween(LocalDate start, LocalDate end);
 
     List<Reservation> findByCheckOutDateBetween(LocalDate start, LocalDate end);
+
+    @Query("{ 'roomType': ?0, 'status': { $ne: 'CANCELLED' }, 'checkInDate': { $lt: ?2 }, 'checkOutDate': { $gt: ?1 } }")
+    List<Reservation> findOverlappingReservations(RoomType roomType, LocalDate checkIn, LocalDate checkOut);
 }

@@ -12,6 +12,7 @@ import com.example.demo.reservation.dto.ReservationCreateRequest;
 import com.example.demo.reservation.dto.ReservationResponse;
 import com.example.demo.reservation.dto.ReservationStaffCreateRequest;
 import com.example.demo.reservation.dto.ReservationStatusUpdateRequest;
+import com.example.demo.room.RoomTypeDetailsRepository;
 import com.example.demo.user.CurrentUserService;
 import com.example.demo.user.User;
 
@@ -19,11 +20,16 @@ import com.example.demo.user.User;
 public class ReservationService {
     private final ReservationRepository reservationRepository;
     private final CurrentUserService currentUserService;
+    private final RoomTypeDetailsRepository roomTypeDetailsRepository;
     private final ReservationMapper reservationMapper;
 
-    public ReservationService(ReservationRepository reservationRepository, CurrentUserService currentUserService) {
+    public ReservationService(
+            ReservationRepository reservationRepository,
+            CurrentUserService currentUserService,
+            RoomTypeDetailsRepository roomTypeDetailsRepository) {
         this.reservationRepository = reservationRepository;
         this.currentUserService = currentUserService;
+        this.roomTypeDetailsRepository = roomTypeDetailsRepository;
         this.reservationMapper = new ReservationMapper();
     }
 
@@ -49,6 +55,7 @@ public class ReservationService {
     public ReservationResponse createMyReservation(ReservationCreateRequest request) {
         User user = currentUserService.getCurrentUser();
         validateDates(request.checkInDate(), request.checkOutDate());
+        ensureAvailability(request.roomType(), request.checkInDate(), request.checkOutDate());
 
         Reservation reservation = new Reservation();
         reservation.setReservationNo(generateReservationNo());
@@ -94,6 +101,7 @@ public class ReservationService {
 
     public ReservationResponse createReservation(ReservationStaffCreateRequest request) {
         validateDates(request.checkInDate(), request.checkOutDate());
+        ensureAvailability(request.roomType(), request.checkInDate(), request.checkOutDate());
 
         Reservation reservation = new Reservation();
         reservation.setReservationNo(generateReservationNo());
@@ -126,6 +134,17 @@ public class ReservationService {
     private void validateDates(LocalDate checkIn, LocalDate checkOut) {
         if (checkOut.isBefore(checkIn) || checkOut.isEqual(checkIn)) {
             throw new IllegalArgumentException("Check-out date must be after check-in date");
+        }
+    }
+
+    private void ensureAvailability(RoomType roomType, LocalDate checkIn, LocalDate checkOut) {
+        int totalRooms = roomTypeDetailsRepository.findByRoomType(roomType)
+                .map(details -> details.getTotalRooms() != null ? details.getTotalRooms() : 0)
+                .orElse(0);
+
+        int bookedRooms = reservationRepository.findOverlappingReservations(roomType, checkIn, checkOut).size();
+        if (bookedRooms >= totalRooms) {
+            throw new IllegalArgumentException("No availability for selected dates");
         }
     }
 }

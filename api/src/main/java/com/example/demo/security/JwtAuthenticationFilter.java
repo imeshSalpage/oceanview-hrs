@@ -31,15 +31,19 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         String token = resolveToken(request);
 
         if (token != null) {
-            Claims claims = jwtService.parseClaims(token);
-            String username = claims.getSubject();
+            try {
+                Claims claims = jwtService.parseClaims(token);
+                String username = claims.getSubject();
 
-            if (StringUtils.hasText(username) && SecurityContextHolder.getContext().getAuthentication() == null) {
-                UserPrincipal principal = (UserPrincipal) userDetailsService.loadUserByUsername(username);
-                UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(
-                        principal, null, principal.getAuthorities());
-                authentication.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
-                SecurityContextHolder.getContext().setAuthentication(authentication);
+                if (StringUtils.hasText(username) && SecurityContextHolder.getContext().getAuthentication() == null) {
+                    UserPrincipal principal = (UserPrincipal) userDetailsService.loadUserByUsername(username);
+                    UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(
+                            principal, null, principal.getAuthorities());
+                    authentication.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
+                    SecurityContextHolder.getContext().setAuthentication(authentication);
+                }
+            } catch (Exception ignored) {
+                // Ignore invalid tokens and continue without authentication
             }
         }
 
@@ -52,5 +56,11 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             return header.substring(7);
         }
         return null;
+    }
+
+    @Override
+    protected boolean shouldNotFilter(HttpServletRequest request) {
+        String path = request.getServletPath();
+        return path.startsWith("/api/auth/") || path.equals("/api/help");
     }
 }
