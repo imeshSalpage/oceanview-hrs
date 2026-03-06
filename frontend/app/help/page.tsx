@@ -21,7 +21,7 @@ const faqs = [
 
 export default function HelpPage() {
   return (
-    <div className="min-h-screen bg-white dark:bg-slate-950">
+    <div className="min-h-screen ocean-wave">
       <SiteHeader />
       <main className="mx-auto w-full max-w-6xl space-y-10 px-6 py-16">
         <section className="space-y-4">

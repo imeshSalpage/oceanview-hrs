@@ -42,7 +42,7 @@ export default function LoginPage() {
   };
 
   return (
-    <div className="min-h-screen bg-slate-50 dark:bg-slate-950">
+    <div className="min-h-screen ocean-wave">
       <SiteHeader />
       <main className="mx-auto flex w-full max-w-6xl flex-col items-center justify-center px-6 py-16">
         <Card className="w-full max-w-md">
