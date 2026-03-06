@@ -19,3 +19,12 @@ up:
 
 down:
 	docker compose down
+
+up-dev:
+	docker compose -f docker-compose.dev.yml up --build
+
+down-dev:
+	docker compose -f docker-compose.dev.yml down
+
+logs-dev:
+	docker compose -f docker-compose.dev.yml logs -f
