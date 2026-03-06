@@ -2,11 +2,12 @@
 
 import Link from "next/link";
 import { useState } from "react";
+import { PlusCircle } from "lucide-react";
 
 import { SiteFooter } from "@/components/layout/site-footer";
 import { SiteHeader } from "@/components/layout/site-header";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { api } from "@/lib/api";
@@ -52,26 +53,33 @@ export default function NewReservationPage() {
   }
 
   return (
-    <div className="min-h-screen bg-slate-50 dark:bg-slate-950">
+    <div className="ocean-wave min-h-screen">
       <SiteHeader />
-      <main className="mx-auto w-full max-w-6xl space-y-8 px-6 py-12">
+
+      {/* ── Page hero ── */}
+      <section className="relative mx-auto w-full max-w-6xl px-6 pt-14 pb-10 text-center">
+        <div
+          className="pointer-events-none absolute left-1/2 top-0 -z-10 h-56 w-[600px] -translate-x-1/2 -translate-y-1/2 rounded-full opacity-20"
+          style={{ background: "radial-gradient(circle, #22d3ee, transparent 70%)", filter: "blur(60px)" }}
+        />
+        <span className="ocean-pill mb-4 inline-flex items-center gap-1.5"><PlusCircle className="h-3.5 w-3.5" />New Reservation</span>
+        <h1 className="text-4xl font-bold tracking-tight text-slate-900 sm:text-5xl">Book Your Stay</h1>
+        <p className="mx-auto mt-3 max-w-md text-slate-600">Secure your preferred room type in a few steps.</p>
+      </section>
+
+      <main className="mx-auto w-full max-w-6xl space-y-8 px-6 pb-24">
         <div className="flex items-center justify-between">
-          <div>
-            <h1 className="text-3xl font-semibold text-slate-900 dark:text-white">New Reservation</h1>
-            <p className="text-sm text-slate-500 dark:text-slate-400">
-              Secure your preferred room type in a few steps.
-            </p>
-          </div>
+          <h2 className="text-xl font-semibold text-slate-900">Guest Details</h2>
           <Button asChild variant="outline">
             <Link href="/my-reservations">Back to list</Link>
           </Button>
         </div>
 
-        <Card className="max-w-2xl">
-          <CardHeader>
-            <CardTitle>Guest details</CardTitle>
-          </CardHeader>
-          <CardContent>
+        <div className="card-ocean max-w-2xl rounded-3xl overflow-hidden">
+          <div className="px-6 py-4 border-b border-sky-100/60">
+            <h3 className="text-base font-semibold text-slate-900">Fill in your details</h3>
+          </div>
+          <div className="p-6">
             <form className="space-y-4" onSubmit={handleSubmit}>
               <div className="grid gap-4 sm:grid-cols-2">
                 <div className="space-y-2">
@@ -144,8 +152,8 @@ export default function NewReservationPage() {
               {error ? <p className="text-sm text-rose-500">{error}</p> : null}
               <Button disabled={loading}>{loading ? "Saving..." : "Confirm reservation"}</Button>
             </form>
-          </CardContent>
-        </Card>
+          </div>
+        </div>
       </main>
       <SiteFooter />
     </div>

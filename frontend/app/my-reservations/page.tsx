@@ -2,12 +2,12 @@
 
 import Link from "next/link";
 import { useEffect, useState } from "react";
+import { CalendarDays, PlusCircle } from "lucide-react";
 
 import { SiteFooter } from "@/components/layout/site-footer";
 import { SiteHeader } from "@/components/layout/site-header";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { api } from "@/lib/api";
 import { formatDate } from "@/lib/format";
@@ -58,26 +58,35 @@ export default function MyReservationsPage() {
   };
 
   return (
-    <div className="min-h-screen bg-slate-50 dark:bg-slate-950">
+    <div className="ocean-wave min-h-screen">
       <SiteHeader />
-      <main className="mx-auto w-full max-w-6xl space-y-8 px-6 py-12">
+
+      {/* ── Page hero ── */}
+      <section className="relative mx-auto w-full max-w-6xl px-6 pt-14 pb-10 text-center">
+        <div
+          className="pointer-events-none absolute left-1/2 top-0 -z-10 h-56 w-[600px] -translate-x-1/2 -translate-y-1/2 rounded-full opacity-20"
+          style={{ background: "radial-gradient(circle, #22d3ee, transparent 70%)", filter: "blur(60px)" }}
+        />
+        <span className="ocean-pill mb-4 inline-flex items-center gap-1.5"><CalendarDays className="h-3.5 w-3.5" />My Reservations</span>
+        <h1 className="text-4xl font-bold tracking-tight text-slate-900 sm:text-5xl">Your Stays</h1>
+        <p className="mx-auto mt-3 max-w-md text-slate-600">
+          Track upcoming stays, update details, and view your bill.
+        </p>
+      </section>
+
+      <main className="mx-auto w-full max-w-6xl space-y-8 px-6 pb-24">
         <div className="flex flex-wrap items-center justify-between gap-4">
-          <div>
-            <h1 className="text-3xl font-semibold text-slate-900 dark:text-white">My Reservations</h1>
-            <p className="text-sm text-slate-500 dark:text-slate-400">
-              Track upcoming stays, update details, and view your bill.
-            </p>
-          </div>
+          <h2 className="text-xl font-semibold text-slate-900">All Reservations</h2>
           <Button asChild>
-            <Link href="/my-reservations/new">New reservation</Link>
+            <Link href="/my-reservations/new"><PlusCircle className="mr-1.5 h-4 w-4" />New reservation</Link>
           </Button>
         </div>
 
-        <Card>
-          <CardHeader>
-            <CardTitle>Your bookings</CardTitle>
-          </CardHeader>
-          <CardContent>
+        <div className="card-ocean rounded-3xl overflow-hidden">
+          <div className="px-6 py-4 border-b border-sky-100/60">
+            <h3 className="text-base font-semibold text-slate-900">Your bookings</h3>
+          </div>
+          <div className="p-6">
             {loading ? (
               <p className="text-sm text-slate-500">Loading reservations...</p>
             ) : error ? (
@@ -127,8 +136,8 @@ export default function MyReservationsPage() {
                 </TableBody>
               </Table>
             )}
-          </CardContent>
-        </Card>
+          </div>
+        </div>
       </main>
       <SiteFooter />
     </div>
