@@ -1,11 +1,11 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { Banknote, BellRing, CalendarDays, DoorOpen, Shield } from "lucide-react";
 
+import { DashboardNav } from "@/components/layout/dashboard-nav";
 import { SiteFooter } from "@/components/layout/site-footer";
 import { SiteHeader } from "@/components/layout/site-header";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Input } from "@/components/ui/input";
 import { api } from "@/lib/api";
 import { formatCurrency } from "@/lib/format";
 import { useRoleGuard } from "@/lib/guard";
@@ -53,65 +53,70 @@ export default function DashboardPage() {
   }
 
   return (
-    <div className="min-h-screen bg-slate-50 dark:bg-slate-950">
+    <div className="ocean-wave min-h-screen">
       <SiteHeader />
-      <main className="mx-auto w-full max-w-6xl space-y-10 px-6 py-12">
-        <div>
-          <h1 className="text-3xl font-semibold text-slate-900 dark:text-white">Staff Dashboard</h1>
-          <p className="text-sm text-slate-500 dark:text-slate-400">
-            Monitor arrivals, departures, and revenue.
-          </p>
+      <DashboardNav />
+
+      <main className="mx-auto w-full max-w-6xl space-y-8 px-6 py-10">
+        {/* Page header */}
+        <div className="space-y-1">
+          <span className="ocean-pill inline-flex items-center gap-1.5"><Shield className="h-3.5 w-3.5" /> Staff Portal</span>
+          <h1 className="mt-2 text-3xl font-bold text-slate-900">Dashboard</h1>
+          <p className="text-slate-600">Monitor arrivals, departures, and revenue at a glance.</p>
         </div>
 
-        <Card>
-          <CardHeader>
-            <CardTitle>Revenue range</CardTitle>
-          </CardHeader>
-          <CardContent className="grid gap-4 sm:grid-cols-[1fr_1fr_auto]">
-            <Input type="date" value={startDate} onChange={(event) => setStartDate(event.target.value)} />
-            <Input type="date" value={endDate} onChange={(event) => setEndDate(event.target.value)} />
-            <div className="flex items-center text-sm text-slate-500 dark:text-slate-400">
-              {metrics ? formatCurrency(metrics.revenueInRange) : "Loading..."}
+        {error ? (
+          <p className="rounded-xl bg-rose-50 px-4 py-3 text-sm text-rose-600 border border-rose-200">{error}</p>
+        ) : null}
+
+        {/* Metric cards */}
+        <section className="grid gap-5 md:grid-cols-2 lg:grid-cols-4">
+          {[
+            { label: "Total reservations", value: metrics?.totalReservations ?? "--", Icon: CalendarDays },
+            { label: "Check-ins (7 days)", value: metrics?.upcomingCheckInsNext7Days ?? "--", Icon: BellRing },
+            { label: "Check-outs (7 days)", value: metrics?.upcomingCheckOutsNext7Days ?? "--", Icon: DoorOpen },
+            { label: "Revenue (range)", value: metrics ? formatCurrency(metrics.revenueInRange) : "--", Icon: Banknote },
+          ].map((stat) => (
+            <div key={stat.label} className="card-ocean rounded-2xl p-5 space-y-3">
+              <div className="flex items-center justify-between">
+                <p className="text-xs font-semibold uppercase tracking-wide text-slate-500">{stat.label}</p>
+                <stat.Icon className="h-5 w-5 text-sky-700" />
+              </div>
+              <p className="text-3xl font-bold text-slate-900">{stat.value}</p>
             </div>
-          </CardContent>
-        </Card>
-
-        {error ? <p className="text-sm text-rose-500">{error}</p> : null}
-
-        <section className="grid gap-6 md:grid-cols-2 lg:grid-cols-4">
-          <Card>
-            <CardHeader>
-              <CardTitle>Total reservations</CardTitle>
-            </CardHeader>
-            <CardContent className="text-3xl font-semibold">
-              {metrics?.totalReservations ?? "--"}
-            </CardContent>
-          </Card>
-          <Card>
-            <CardHeader>
-              <CardTitle>Upcoming check-ins</CardTitle>
-            </CardHeader>
-            <CardContent className="text-3xl font-semibold">
-              {metrics?.upcomingCheckInsNext7Days ?? "--"}
-            </CardContent>
-          </Card>
-          <Card>
-            <CardHeader>
-              <CardTitle>Upcoming check-outs</CardTitle>
-            </CardHeader>
-            <CardContent className="text-3xl font-semibold">
-              {metrics?.upcomingCheckOutsNext7Days ?? "--"}
-            </CardContent>
-          </Card>
-          <Card>
-            <CardHeader>
-              <CardTitle>Revenue (range)</CardTitle>
-            </CardHeader>
-            <CardContent className="text-3xl font-semibold">
-              {metrics ? formatCurrency(metrics.revenueInRange) : "--"}
-            </CardContent>
-          </Card>
+          ))}
         </section>
+
+        {/* Date range filter */}
+        <div className="ocean-surface rounded-2xl p-6 space-y-4">
+          <h2 className="text-sm font-bold uppercase tracking-wide text-slate-700">Revenue date range</h2>
+          <div className="flex flex-wrap items-center gap-4">
+            <div className="space-y-1">
+              <label className="text-xs font-semibold uppercase tracking-wide text-slate-500">From</label>
+              <input
+                type="date"
+                className="ocean-input w-44"
+                value={startDate}
+                onChange={(e) => setStartDate(e.target.value)}
+              />
+            </div>
+            <div className="space-y-1">
+              <label className="text-xs font-semibold uppercase tracking-wide text-slate-500">To</label>
+              <input
+                type="date"
+                className="ocean-input w-44"
+                value={endDate}
+                onChange={(e) => setEndDate(e.target.value)}
+              />
+            </div>
+            <div className="mt-5">
+              <p className="text-xs font-semibold uppercase tracking-wide text-slate-500">Total</p>
+              <p className="text-2xl font-bold text-sky-700">
+                {metrics ? formatCurrency(metrics.revenueInRange) : "—"}
+              </p>
+            </div>
+          </div>
+        </div>
       </main>
       <SiteFooter />
     </div>

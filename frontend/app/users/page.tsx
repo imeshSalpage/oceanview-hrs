@@ -1,14 +1,12 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { ShieldCheck, UsersRound } from "lucide-react";
 
+import { DashboardNav } from "@/components/layout/dashboard-nav";
 import { SiteFooter } from "@/components/layout/site-footer";
 import { SiteHeader } from "@/components/layout/site-header";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { api } from "@/lib/api";
 import { useRoleGuard } from "@/lib/guard";
 import type { Role, UserResponse } from "@/lib/types";
@@ -84,114 +82,89 @@ export default function UsersPage() {
   };
 
   return (
-    <div className="min-h-screen bg-slate-50 dark:bg-slate-950">
+    <div className="ocean-wave min-h-screen">
       <SiteHeader />
-      <main className="mx-auto w-full max-w-6xl space-y-8 px-6 py-12">
-        <div>
-          <h1 className="text-3xl font-semibold text-slate-900 dark:text-white">User Management</h1>
-          <p className="text-sm text-slate-500 dark:text-slate-400">
-            Create staff accounts, update roles, and deactivate users.
-          </p>
+      <DashboardNav />
+
+      <main className="mx-auto w-full max-w-6xl space-y-8 px-6 py-10">
+        <div className="space-y-1">
+          <span className="ocean-pill inline-flex items-center gap-1.5"><ShieldCheck className="h-3.5 w-3.5" /> Admin</span>
+          <h1 className="mt-2 text-3xl font-bold text-slate-900">User Management</h1>
+          <p className="text-slate-600">Create staff accounts, update roles, and deactivate users.</p>
         </div>
 
-        {error ? <p className="text-sm text-rose-500">{error}</p> : null}
+        {error ? (
+          <p className="rounded-xl bg-rose-50 px-4 py-3 text-sm text-rose-600 border border-rose-200">{error}</p>
+        ) : null}
 
-        <Card>
-          <CardHeader>
-            <CardTitle>Create staff account</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <form className="grid gap-4 md:grid-cols-4" onSubmit={createUser}>
-              <div className="space-y-2">
-                <Label>Username</Label>
-                <Input
-                  value={form.username}
-                  onChange={(event) => setForm((prev) => ({ ...prev, username: event.target.value }))}
-                  required
-                />
-              </div>
-              <div className="space-y-2">
-                <Label>Email</Label>
-                <Input
-                  type="email"
-                  value={form.email}
-                  onChange={(event) => setForm((prev) => ({ ...prev, email: event.target.value }))}
-                  required
-                />
-              </div>
-              <div className="space-y-2">
-                <Label>Password</Label>
-                <Input
-                  type="password"
-                  value={form.password}
-                  onChange={(event) => setForm((prev) => ({ ...prev, password: event.target.value }))}
-                  required
-                />
-              </div>
-              <div className="space-y-2">
-                <Label>Role</Label>
-                <select
-                  value={form.role}
-                  onChange={(event) => setForm((prev) => ({ ...prev, role: event.target.value as Role }))}
-                  className="h-11 rounded-xl border border-slate-200 bg-white px-4 text-sm text-slate-900 shadow-sm dark:border-slate-800 dark:bg-slate-950 dark:text-white"
-                >
-                  {roles.map((role) => (
-                    <option key={role} value={role}>
-                      {role}
-                    </option>
+        {/* Create staff account */}
+        <div className="ocean-surface rounded-2xl p-6 space-y-4">
+          <h2 className="text-sm font-bold uppercase tracking-wide text-slate-700 inline-flex items-center gap-1.5"><UsersRound className="h-4 w-4" />Create staff account</h2>
+          <form className="grid gap-4 md:grid-cols-4" onSubmit={createUser}>
+            <div className="space-y-1.5">
+              <label className="text-xs font-semibold uppercase tracking-wide text-slate-500">Username</label>
+              <input className="ocean-input" required value={form.username}
+                onChange={(e) => setForm((p) => ({ ...p, username: e.target.value }))} />
+            </div>
+            <div className="space-y-1.5">
+              <label className="text-xs font-semibold uppercase tracking-wide text-slate-500">Email</label>
+              <input type="email" className="ocean-input" required value={form.email}
+                onChange={(e) => setForm((p) => ({ ...p, email: e.target.value }))} />
+            </div>
+            <div className="space-y-1.5">
+              <label className="text-xs font-semibold uppercase tracking-wide text-slate-500">Password</label>
+              <input type="password" className="ocean-input" required value={form.password}
+                onChange={(e) => setForm((p) => ({ ...p, password: e.target.value }))} />
+            </div>
+            <div className="space-y-1.5">
+              <label className="text-xs font-semibold uppercase tracking-wide text-slate-500">Role</label>
+              <select className="ocean-input" value={form.role}
+                onChange={(e) => setForm((p) => ({ ...p, role: e.target.value as Role }))}>
+                {roles.map((r) => <option key={r} value={r}>{r}</option>)}
+              </select>
+            </div>
+            <div className="md:col-span-4">
+              <Button type="submit">Create user</Button>
+            </div>
+          </form>
+        </div>
+
+        {/* Users table */}
+        <div className="card-ocean overflow-hidden rounded-2xl">
+          <div className="overflow-x-auto">
+            <table className="w-full text-sm">
+              <thead>
+                <tr className="border-b border-sky-100 bg-sky-50/60">
+                  {["Username", "Email", "Role", "Actions"].map((h) => (
+                    <th key={h} className="px-4 py-3 text-left text-xs font-bold uppercase tracking-wide text-slate-500">{h}</th>
                   ))}
-                </select>
-              </div>
-              <div className="md:col-span-4">
-                <Button type="submit">Create user</Button>
-              </div>
-            </form>
-          </CardContent>
-        </Card>
-
-        <Card>
-          <CardHeader>
-            <CardTitle>All users</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <Table>
-              <TableHeader>
-                <TableRow>
-                  <TableHead>Username</TableHead>
-                  <TableHead>Email</TableHead>
-                  <TableHead>Role</TableHead>
-                  <TableHead>Actions</TableHead>
-                </TableRow>
-              </TableHeader>
-              <TableBody>
+                </tr>
+              </thead>
+              <tbody className="divide-y divide-sky-50">
                 {users.map((user) => (
-                  <TableRow key={user.id}>
-                    <TableCell className="font-medium">{user.username}</TableCell>
-                    <TableCell>{user.email}</TableCell>
-                    <TableCell>
+                  <tr key={user.id} className="bg-white/70 hover:bg-sky-50/50 transition-colors">
+                    <td className="px-4 py-3 font-medium text-slate-900">{user.username}</td>
+                    <td className="px-4 py-3 text-slate-600">{user.email}</td>
+                    <td className="px-4 py-3">
                       <select
                         value={user.role}
-                        onChange={(event) => updateRole(user.id, event.target.value as Role)}
-                        className="h-9 rounded-lg border border-slate-200 bg-white px-3 text-xs text-slate-900 shadow-sm dark:border-slate-800 dark:bg-slate-950 dark:text-white"
+                        onChange={(e) => updateRole(user.id, e.target.value as Role)}
+                        className="h-8 rounded-lg border border-sky-200 bg-white px-2 text-xs text-slate-800 shadow-sm focus:outline-none focus:ring-2 focus:ring-sky-400"
                       >
-                        {roles.map((role) => (
-                          <option key={role} value={role}>
-                            {role}
-                          </option>
-                        ))}
+                        {roles.map((r) => <option key={r} value={r}>{r}</option>)}
                       </select>
-                    </TableCell>
-                    <TableCell>
+                    </td>
+                    <td className="px-4 py-3">
                       <Button size="sm" variant="ghost" onClick={() => deleteUser(user.id)}>
                         Delete
                       </Button>
-                    </TableCell>
-                  </TableRow>
+                    </td>
+                  </tr>
                 ))}
-              </TableBody>
-            </Table>
-          </CardContent>
-        </Card>
+              </tbody>
+            </table>
+          </div>
+        </div>
       </main>
       <SiteFooter />
     </div>
