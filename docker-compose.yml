@@ -21,12 +21,8 @@ services:
     build:
       context: ./api
     container_name: ocean-api
-    environment:
-      SPRING_PROFILES_ACTIVE: docker
-      SPRING_DATA_MONGODB_URI: mongodb://admin:password@mongo:27017/ocean_view_resort?authSource=admin
-      APP_SEED_ENABLED: true
-      SEED_DEFAULT_PASSWORD: Password@123
-      JWT_SECRET: change-this-secret-change-this-secret-change-this-secret
+    env_file:
+      - ./api/.env
     ports:
       - "8080:8080"
     depends_on:
