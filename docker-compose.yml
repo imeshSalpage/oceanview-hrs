@@ -28,6 +28,15 @@ services:
     depends_on:
       mongo:
         condition: service_healthy
+      mailhog:
+        condition: service_started
+
+  mailhog:
+    image: mailhog/mailhog:latest
+    container_name: ocean-mailhog
+    ports:
+      - "1025:1025" # SMTP port
+      - "8025:8025" # UI port
 
   frontend:
     build:
