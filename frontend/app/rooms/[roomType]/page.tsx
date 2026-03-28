@@ -116,6 +116,7 @@ export default function RoomDetailPage() {
   const [bookingError, setBookingError] = useState<string | null>(null);
 
   const [isBooking, setIsBooking] = useState(false);
+  const [isChecking, setIsChecking] = useState(false);
   const [isExtractingId, setIsExtractingId] = useState(false);
   const [isCalendarModalOpen, setIsCalendarModalOpen] = useState(false);
   const [calendarDraftRange, setCalendarDraftRange] = useState<DateRange | undefined>(undefined);
@@ -475,7 +476,7 @@ export default function RoomDetailPage() {
     setIsCalendarModalOpen(false);
   };
 
-  const mainImage = room?.imageUrls[selectedImageIndex] ?? room?.imageUrls[0];
+  const mainImage = room?.imageUrls[selectedImageIndex] || room?.imageUrls[0] || fallbackRoomImageUrl;
 
   return (
     <div className="ocean-wave min-h-screen">
@@ -959,9 +960,16 @@ export default function RoomDetailPage() {
                         </label>
                       </div>
 
-                      {/* Status / Errors */}
+                        {/* Status / Errors */}
                       <div className="space-y-3">
-                        {availability && (
+                        {isChecking && (
+                          <div className="flex items-center gap-2 px-1 text-sky-600 animate-pulse">
+                            <Sparkles className="h-4 w-4" />
+                            <span className="text-xs font-bold tracking-tight">Checking availability...</span>
+                          </div>
+                        )}
+
+                        {availability && !isChecking && (
                           <div
                             className={`animate-in fade-in slide-in-from-top-2 rounded-2xl px-5 py-4 border transition-all duration-300 ${
                               availability.available
