@@ -10,9 +10,13 @@ frontend-dev:
 frontend-lint:
 	cd frontend && npm run lint
 
+frontend-test:
+	cd frontend && npm run test:unit
+
 test:
-	cd api && ./mvnw test
-	cd frontend && npm run lint && npm run test:unit
+	$(MAKE) api-test
+	$(MAKE) frontend-lint
+	$(MAKE) frontend-test
 
 up:
 	docker compose up --build -d
