@@ -10,6 +10,7 @@ import static org.mockito.Mockito.when;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
+import java.util.Map;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -20,6 +21,7 @@ import org.mockito.ArgumentCaptor;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import com.example.demo.common.ResourceNotFoundException;
+import com.example.demo.mail.EmailService;
 import com.example.demo.reservation.dto.ReservationCreateRequest;
 import com.example.demo.reservation.dto.ReservationResponse;
 import com.example.demo.room.RoomTypeDetails;
@@ -39,6 +41,9 @@ class ReservationServiceTest {
     @Mock
     private RoomTypeDetailsRepository roomTypeDetailsRepository;
 
+    @Mock
+    private EmailService emailService;
+
     @InjectMocks
     private ReservationService reservationService;
 
@@ -49,6 +54,7 @@ class ReservationServiceTest {
         customer = new User();
         customer.setId("customer-id-1");
         customer.setUsername("customer");
+        customer.setEmail("customer@example.com");
 
         when(currentUserService.getCurrentUser()).thenReturn(customer);
     }
@@ -83,6 +89,8 @@ class ReservationServiceTest {
         RoomTypeDetails details = new RoomTypeDetails();
         details.setRoomType(RoomType.DOUBLE);
         details.setTotalRooms(4);
+        details.setName("Double Room");
+        details.setRatePerNight(15000.0);
 
         when(roomTypeDetailsRepository.findByRoomType(RoomType.DOUBLE)).thenReturn(Optional.of(details));
         when(reservationRepository.findOverlappingReservations(any(), any(), any())).thenReturn(List.of());
@@ -102,6 +110,14 @@ class ReservationServiceTest {
         assertEquals(RoomType.DOUBLE, response.roomType());
         assertEquals(ReservationStatus.BOOKED, response.status());
         assertEquals("customer-id-1", response.customerId());
+
+        // Verify email was sent
+        verify(emailService).sendHtmlEmail(
+            any(String.class), 
+            any(String.class), 
+            any(String.class), 
+            any(Map.class)
+        );
     }
 
     @Test
