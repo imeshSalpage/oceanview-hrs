@@ -30,7 +30,7 @@ import { Button } from "@/components/ui/button";
 import { api } from "@/lib/api";
 import { getToken, setToken } from "@/lib/auth";
 import { formatCurrency } from "@/lib/format";
-import { extractIdNumberFromImage } from "@/lib/id-extractor";
+import { extractIdDataFromImage } from "@/lib/id-extractor";
 import { cn } from "@/lib/utils";
 import type {
   AuthResponse,
@@ -403,33 +403,37 @@ export default function RoomDetailPage() {
     setBookingError(null);
   };
 
-  const scanIdCard = () => {
-    const scanInput = window.prompt("Scan/paste ID data. Use format: ID_NUMBER|FULL_NAME");
-    if (!scanInput) {
-      return;
-    }
-    applyScannedIdData(scanInput);
-  };
-
   const uploadIdImage = async (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
+    if (!file) return;
+    
+    // Clear input so same file can be uploaded again
     event.target.value = "";
-    if (!file) {
-      return;
-    }
 
     setIsExtractingId(true);
+    setBookingError(null);
+    
     try {
-      const extractedId = await extractIdNumberFromImage(file);
-      if (!extractedId) {
-        setBookingError("No ID number detected in uploaded image.");
+      const data = await extractIdDataFromImage(file);
+      
+      if (!data.idNumber && !data.fullName && !data.address) {
+        setBookingError("No readable information found in the ID image. Please try another photo.");
         return;
       }
 
-      setForm((previous) => ({ ...previous, idNumber: extractedId }));
-      setBookingError(null);
-    } catch {
-      setBookingError("Failed to extract ID number from image");
+      setForm((prev) => ({
+        ...prev,
+        idNumber: data.idNumber || prev.idNumber,
+        guestName: data.fullName || prev.guestName,
+        address: data.address || prev.address,
+      }));
+      
+      if (!data.idNumber) {
+        setBookingError("ID number not detected, but name/address were updated.");
+      }
+    } catch (err) {
+      console.error("ID extraction failed:", err);
+      setBookingError("Extraction failed. Please enter details manually.");
     } finally {
       setIsExtractingId(false);
     }
@@ -828,7 +832,23 @@ export default function RoomDetailPage() {
                               variant="outline" 
                               size="sm"
                               className="rounded-2xl border-dashed border-sky-300 bg-sky-50/30 text-sky-700 font-bold text-[11px] hover:bg-sky-50" 
-                              onClick={scanIdCard}
+                              onClick={() => {
+                                const scanInput = window.prompt("Scan/paste ID data. Use format: ID_NUMBER|FULL_NAME");
+                                if (scanInput) {
+                                  const normalized = scanInput.trim();
+                                  const parts = normalized.split(/[|,]/).map((part) => part.trim()).filter(Boolean);
+                                  if (parts.length >= 2) {
+                                    setForm((previous) => ({
+                                      ...previous,
+                                      idNumber: parts[0],
+                                      guestName: parts.slice(1).join(" "),
+                                    }));
+                                  } else {
+                                    setForm((previous) => ({ ...previous, idNumber: normalized }));
+                                  }
+                                  setBookingError(null);
+                                }
+                              }}
                             >
                               Scan Text
                             </Button>

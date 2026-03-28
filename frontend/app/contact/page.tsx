@@ -53,12 +53,32 @@ export default function ContactPage() {
           ))}
         </div>
 
-        {/* Map placeholder */}
-        <div className="hero-ocean relative overflow-hidden rounded-3xl p-1 shadow-xl shadow-cyan-200/30">
-          <div className="flex h-48 items-center justify-center rounded-[calc(1.5rem-4px)] bg-sky-900/70 backdrop-blur-sm">
-            <div className="text-center space-y-1">
-              <Map className="mx-auto h-8 w-8 text-white" />
-              <p className="text-sm font-medium text-white/80">Unawatuna, Galle — 6°01&apos;N 80°14&apos;E</p>
+        {/* Google Maps Integration */}
+        <div className="hero-ocean relative overflow-hidden rounded-[32px] p-1 shadow-2xl shadow-cyan-200/40">
+          <div className="h-[450px] w-full overflow-hidden rounded-[calc(2rem-4px)] bg-slate-100">
+            <iframe
+              title="Ocean View Resort Location"
+              src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d15871.123512345678!2d80.244923456789!3d6.01235123456789!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x3ae173f4e1f56a5b%3A0xc63806a74b33451!2sUnawatuna%20Beach!5e0!3m2!1sen!2slk!4v1700000000000!5m2!1sen!2slk"
+              className="h-full w-full border-0 grayscale-[0.2] contrast-[1.1] transition-all duration-700 hover:grayscale-0"
+              allowFullScreen
+              loading="lazy"
+              referrerPolicy="no-referrer-when-downgrade"
+            ></iframe>
+            
+            {/* Overlay Info Card */}
+            <div className="absolute bottom-10 left-10 z-10 hidden max-w-xs rounded-3xl bg-white/95 p-6 shadow-2xl backdrop-blur-md lg:block ring-1 ring-slate-200/50">
+              <div className="flex items-center gap-3 mb-4">
+                <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-sky-500 text-white shadow-lg shadow-sky-200">
+                  <MapPin className="h-5 w-5" />
+                </div>
+                <div>
+                  <h3 className="text-sm font-black text-slate-900 uppercase tracking-tight">Our Habitat</h3>
+                  <p className="text-[10px] font-bold text-sky-600 uppercase tracking-widest leading-none mt-0.5">Unawatuna, Galle</p>
+                </div>
+              </div>
+              <p className="text-xs font-medium text-slate-600 leading-relaxed">
+                Nestled right on the golden sands of Unawatuna Beach. Only 15 minutes from the historic Galle Fort.
+              </p>
             </div>
           </div>
         </div>
