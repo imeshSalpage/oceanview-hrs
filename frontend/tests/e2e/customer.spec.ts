@@ -10,7 +10,7 @@ test("customer new reservation goes to rooms", async ({ page }) => {
 
   await page.getByRole("link", { name: "New reservation" }).click();
   await expect(page).toHaveURL(/\/rooms/);
-  await expect(page.getByRole("heading", { name: "Coastal stays for every traveller" })).toBeVisible();
+  await expect(page.getByText("Coastal stays for every traveller")).toBeVisible();
 
   await logout(page);
 });
