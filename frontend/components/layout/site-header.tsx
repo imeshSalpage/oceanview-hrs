@@ -48,7 +48,9 @@ export function SiteHeader() {
             { href: "/nearby-places", label: "Nearby Places" },
             { href: "/contact", label: "Contact" },
             { href: "/help", label: "Help" },
-            { href: "/my-reservations", label: "My Reservations" },
+            ...(authState.role === "ADMIN" || authState.role === "RECEPTION"
+              ? []
+              : [{ href: "/my-reservations", label: "My Reservations" }]),
           ].map((link) => (
             <Link
               key={link.href}

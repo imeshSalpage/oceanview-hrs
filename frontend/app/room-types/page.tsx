@@ -10,6 +10,7 @@ import { Button } from "@/components/ui/button";
 import { api } from "@/lib/api";
 import { useRoleGuard } from "@/lib/guard";
 import type { RoomTypeDetails } from "@/lib/types";
+const fallbackRoomImageUrl = "https://placehold.co/600x400/e2e8f0/475569?text=Ocean+View+Room";
 
 interface RoomTypeFormState extends RoomTypeDetails {
   amenitiesText: string;
@@ -294,6 +295,12 @@ export default function RoomTypesPage() {
                             src={url}
                             alt={`${room.name} preview ${imageIndex + 1}`}
                             className="h-16 w-full rounded-lg border border-sky-100 object-cover"
+                              onError={(event) => {
+                                const target = event.currentTarget;
+                                if (target.src !== fallbackRoomImageUrl) {
+                                  target.src = fallbackRoomImageUrl;
+                                }
+                              }}
                           />
                           <button
                             type="button"

@@ -11,21 +11,21 @@ const nearbyActivities = [
     title: "Whale Watching at Mirissa",
     description: "Head out at dawn for blue whale and dolphin spotting with certified marine guides.",
     travel: "40 min drive",
-    imageUrl: "https://images.unsplash.com/photo-1474511320723-9a56873867b5?auto=format&fit=crop&w=1400&q=80",
+    imageUrl: "https://images.unsplash.com/photo-1551244072-5d12893278ab?auto=format&fit=crop&w=1400&q=80",
   },
   {
     Icon: Bike,
     title: "Coastal Cycling Trail",
     description: "Ride palm-lined backroads through fishing villages and hidden bays with ocean viewpoints.",
     travel: "15 min drive",
-    imageUrl: "https://images.unsplash.com/photo-1517836357463-d25dfeac3438?auto=format&fit=crop&w=1400&q=80",
+    imageUrl: "https://images.unsplash.com/photo-1541625602330-2277a1cd1f59?auto=format&fit=crop&w=1400&q=80",
   },
   {
     Icon: Mountain,
     title: "Rumassala Nature Hike",
     description: "Guided forest walk with panoramic Galle Bay views and medicinal plant storytelling.",
     travel: "25 min drive",
-    imageUrl: "https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?auto=format&fit=crop&w=1400&q=80",
+    imageUrl: "https://images.unsplash.com/photo-1502082553148-2d11b36cfc27?auto=format&fit=crop&w=1400&q=80",
   },
   {
     Icon: Camera,
@@ -46,7 +46,7 @@ const nearbyActivities = [
     title: "Village Tuk-Tuk Safari",
     description: "Explore nearby markets, tea kiosks, and artisan workshops in a curated local route.",
     travel: "From lobby",
-    imageUrl: "https://images.unsplash.com/photo-1519003300449-424ad0405076?auto=format&fit=crop&w=1400&q=80",
+    imageUrl: "https://images.unsplash.com/photo-1590456220800-482436d4ea20?auto=format&fit=crop&w=1400&q=80",
   },
 ];
 

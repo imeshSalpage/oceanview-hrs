@@ -17,6 +17,8 @@ export default function UsersPage() {
   const guard = useRoleGuard(["ADMIN"], "/login");
   const [users, setUsers] = useState<UserResponse[]>([]);
   const [error, setError] = useState<string | null>(null);
+  const [pendingDeleteUser, setPendingDeleteUser] = useState<UserResponse | null>(null);
+  const [isDeleting, setIsDeleting] = useState(false);
   const [form, setForm] = useState({
     username: "",
     email: "",
@@ -72,12 +74,17 @@ export default function UsersPage() {
   };
 
   const deleteUser = async (id: string) => {
+    setError(null);
+    setIsDeleting(true);
     try {
       await api.del(`/api/users/${id}`);
       const data = await api.get<UserResponse[]>("/api/users");
       setUsers(data);
+      setPendingDeleteUser(null);
     } catch (err) {
       setError(err instanceof Error ? err.message : "Failed to delete user");
+    } finally {
+      setIsDeleting(false);
     }
   };
 
@@ -146,16 +153,31 @@ export default function UsersPage() {
                     <td className="px-4 py-3 font-medium text-slate-900">{user.username}</td>
                     <td className="px-4 py-3 text-slate-600">{user.email}</td>
                     <td className="px-4 py-3">
-                      <select
-                        value={user.role}
-                        onChange={(e) => updateRole(user.id, e.target.value as Role)}
-                        className="h-8 rounded-lg border border-sky-200 bg-white px-2 text-xs text-slate-800 shadow-sm focus:outline-none focus:ring-2 focus:ring-sky-400"
-                      >
-                        {roles.map((r) => <option key={r} value={r}>{r}</option>)}
-                      </select>
+                      {user.role === "CUSTOMER" ? (
+                        <span
+                          className="inline-flex h-8 items-center rounded-lg border border-slate-200 bg-slate-50 px-2 text-xs font-semibold text-slate-600"
+                          title="Role changes are disabled for customer accounts"
+                        >
+                          CUSTOMER (LOCKED)
+                        </span>
+                      ) : (
+                        <select
+                          value={user.role}
+                          onChange={(e) => updateRole(user.id, e.target.value as Role)}
+                          className="h-8 rounded-lg border border-sky-200 bg-white px-2 text-xs text-slate-800 shadow-sm focus:outline-none focus:ring-2 focus:ring-sky-400"
+                          title="Change role"
+                        >
+                          {roles.map((r) => <option key={r} value={r}>{r}</option>)}
+                        </select>
+                      )}
                     </td>
                     <td className="px-4 py-3">
-                      <Button size="sm" variant="ghost" onClick={() => deleteUser(user.id)}>
+                      <Button
+                        size="sm"
+                        variant="ghost"
+                        className="text-rose-600 hover:bg-rose-50 hover:text-rose-700"
+                        onClick={() => setPendingDeleteUser(user)}
+                      >
                         Delete
                       </Button>
                     </td>
@@ -165,6 +187,33 @@ export default function UsersPage() {
             </table>
           </div>
         </div>
+
+        {pendingDeleteUser ? (
+          <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-950/40 p-4">
+            <div className="w-full max-w-md rounded-2xl border border-slate-200 bg-white p-6 shadow-2xl">
+              <h2 className="text-lg font-bold text-slate-900">Confirm user deletion</h2>
+              <p className="mt-2 text-sm text-slate-600">
+                Delete user <span className="font-semibold text-slate-900">{pendingDeleteUser.username}</span>? This action cannot be undone.
+              </p>
+              <div className="mt-5 flex justify-end gap-2">
+                <Button
+                  variant="outline"
+                  onClick={() => setPendingDeleteUser(null)}
+                  disabled={isDeleting}
+                >
+                  Cancel
+                </Button>
+                <Button
+                  onClick={() => deleteUser(pendingDeleteUser.id)}
+                  disabled={isDeleting}
+                  className="bg-rose-600 hover:bg-rose-700"
+                >
+                  {isDeleting ? "Deleting..." : "Yes, delete"}
+                </Button>
+              </div>
+            </div>
+          </div>
+        ) : null}
       </main>
       <SiteFooter />
     </div>
