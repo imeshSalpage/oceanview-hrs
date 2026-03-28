@@ -1,5 +1,6 @@
 "use client";
 
+import Image from "next/image";
 import Link from "next/link";
 import { useParams } from "next/navigation";
 import { useEffect, useMemo, useState } from "react";
@@ -114,7 +115,6 @@ export default function RoomDetailPage() {
   const [error, setError] = useState<string | null>(null);
   const [bookingError, setBookingError] = useState<string | null>(null);
 
-  const [isChecking, setIsChecking] = useState(false);
   const [isBooking, setIsBooking] = useState(false);
   const [isExtractingId, setIsExtractingId] = useState(false);
   const [isCalendarModalOpen, setIsCalendarModalOpen] = useState(false);
@@ -398,9 +398,10 @@ export default function RoomDetailPage() {
       setBookingError(null);
       return;
     }
-
-    setForm((previous) => ({ ...previous, idNumber: normalized }));
-    setBookingError(null);
+    
+    // In this specific component, we don't have a direct button to invoke this anymore
+    // but we keep the logic sync with other booking pages if needed.
+    console.log("Scanned ID data received:", normalized);
   };
 
   const uploadIdImage = async (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -515,17 +516,13 @@ export default function RoomDetailPage() {
             </header>
 
             <section className="space-y-3">
-              <div className="overflow-hidden rounded-3xl border border-sky-100 bg-white/70 shadow-sm">
-                <img
+              <div className="relative overflow-hidden rounded-3xl border border-sky-100 bg-white/70 shadow-sm h-[420px] lg:h-[500px]">
+                <Image
                   src={mainImage}
                   alt={room.name}
-                  className="h-[420px] w-full object-cover transition-transform duration-500 hover:scale-105 lg:h-[500px]"
-                  onError={(event) => {
-                    const target = event.currentTarget;
-                    if (target.src !== fallbackRoomImageUrl) {
-                      target.src = fallbackRoomImageUrl;
-                    }
-                  }}
+                  fill
+                  className="object-cover transition-transform duration-500 hover:scale-105"
+                  unoptimized
                 />
               </div>
               <div className="grid grid-cols-2 gap-3 md:grid-cols-3 lg:grid-cols-5">
@@ -533,23 +530,19 @@ export default function RoomDetailPage() {
                   <button
                     key={url}
                     type="button"
-                    className={`overflow-hidden rounded-2xl border transition ${
+                    className={`relative overflow-hidden rounded-2xl border transition h-24 ${
                       selectedImageIndex === index
                         ? "border-sky-400 ring-2 ring-sky-200"
                         : "border-slate-200 hover:border-sky-300"
                     }`}
                     onClick={() => setSelectedImageIndex(index)}
                   >
-                    <img
+                    <Image
                       src={url}
                       alt={`${room.name} preview ${index + 1}`}
-                      className="h-24 w-full object-cover"
-                      onError={(event) => {
-                        const target = event.currentTarget;
-                        if (target.src !== fallbackRoomImageUrl) {
-                          target.src = fallbackRoomImageUrl;
-                        }
-                      }}
+                      fill
+                      className="object-cover"
+                      unoptimized
                     />
                   </button>
                 ))}

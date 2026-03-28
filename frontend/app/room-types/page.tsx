@@ -1,5 +1,6 @@
 "use client";
 
+import Image from "next/image";
 import { useEffect, useState } from "react";
 import { AlertTriangle, Building2, ShieldCheck, Trash2 } from "lucide-react";
 
@@ -290,17 +291,13 @@ export default function RoomTypesPage() {
                   {room.imageUrls.length > 0 ? (
                     <div className="grid grid-cols-3 gap-2 sm:grid-cols-5">
                       {room.imageUrls.slice(0, 5).map((url, imageIndex) => (
-                        <div key={`${room.roomType}-${imageIndex}`} className="relative">
-                          <img
-                            src={url}
+                        <div key={`${room.roomType}-${imageIndex}`} className="relative h-16 w-full overflow-hidden rounded-lg border border-sky-100">
+                          <Image
+                            src={url || fallbackRoomImageUrl}
                             alt={`${room.name} preview ${imageIndex + 1}`}
-                            className="h-16 w-full rounded-lg border border-sky-100 object-cover"
-                              onError={(event) => {
-                                const target = event.currentTarget;
-                                if (target.src !== fallbackRoomImageUrl) {
-                                  target.src = fallbackRoomImageUrl;
-                                }
-                              }}
+                            fill
+                            className="object-cover"
+                            unoptimized
                           />
                           <button
                             type="button"

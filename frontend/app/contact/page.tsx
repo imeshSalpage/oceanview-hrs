@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { Clock3, Mail, Map, MapPin, MessageCircleMore, Phone } from "lucide-react";
+import { Clock3, Mail, MapPin, MessageCircleMore, Phone } from "lucide-react";
 
 import { SiteFooter } from "@/components/layout/site-footer";
 import { SiteHeader } from "@/components/layout/site-header";

@@ -127,6 +127,7 @@ export async function extractIdDataFromImage(file: File): Promise<ExtractedIdDat
     const { data: { text } } = await worker.recognize(file);
     return findIdData(text);
   } catch (err) {
+    console.error("OCR extraction failed:", err);
     return emptyResult;
   } finally {
     if (worker) await worker.terminate();
