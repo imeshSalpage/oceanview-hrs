@@ -95,7 +95,7 @@ export default function MyReservationsPage() {
               <p className="text-sm text-slate-500">No reservations yet.</p>
             ) : (
               <Table>
-                <TableHeader>
+                <TableHeader className="bg-sky-50/80 text-slate-700">
                   <TableRow>
                     <TableHead>Reservation</TableHead>
                     <TableHead>Dates</TableHead>
@@ -106,8 +106,8 @@ export default function MyReservationsPage() {
                 </TableHeader>
                 <TableBody>
                   {reservations.map((reservation) => (
-                    <TableRow key={reservation.reservationNo}>
-                      <TableCell className="font-medium">{reservation.reservationNo}</TableCell>
+                    <TableRow key={reservation.reservationNo} className="text-slate-900">
+                      <TableCell className="font-medium text-slate-900">{reservation.reservationNo}</TableCell>
                       <TableCell>
                         {formatDate(reservation.checkInDate)} → {formatDate(reservation.checkOutDate)}
                       </TableCell>

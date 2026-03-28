@@ -76,28 +76,28 @@ export default function ReservationDetailPage({ params }: PageProps) {
             </div>
             <div className="grid gap-4 sm:grid-cols-2 p-6">
               <div>
-                <p className="text-xs uppercase text-slate-400">Room Type</p>
-                <p className="text-sm font-medium text-slate-900 dark:text-white">{reservation.roomType}</p>
+                <p className="text-xs uppercase text-slate-600">Room Type</p>
+                <p className="text-sm font-medium text-slate-900">{reservation.roomType}</p>
               </div>
               <div>
-                <p className="text-xs uppercase text-slate-400">Contact</p>
-                <p className="text-sm font-medium text-slate-900 dark:text-white">{reservation.contactNo}</p>
+                <p className="text-xs uppercase text-slate-600">Contact</p>
+                <p className="text-sm font-medium text-slate-900">{reservation.contactNo}</p>
               </div>
               <div>
-                <p className="text-xs uppercase text-slate-400">Check-in</p>
-                <p className="text-sm font-medium text-slate-900 dark:text-white">
+                <p className="text-xs uppercase text-slate-600">Check-in</p>
+                <p className="text-sm font-medium text-slate-900">
                   {formatDate(reservation.checkInDate)}
                 </p>
               </div>
               <div>
-                <p className="text-xs uppercase text-slate-400">Check-out</p>
-                <p className="text-sm font-medium text-slate-900 dark:text-white">
+                <p className="text-xs uppercase text-slate-600">Check-out</p>
+                <p className="text-sm font-medium text-slate-900">
                   {formatDate(reservation.checkOutDate)}
                 </p>
               </div>
               <div className="sm:col-span-2">
-                <p className="text-xs uppercase text-slate-400">Address</p>
-                <p className="text-sm font-medium text-slate-900 dark:text-white">
+                <p className="text-xs uppercase text-slate-600">Address</p>
+                <p className="text-sm font-medium text-slate-900">
                   {reservation.address || "Not provided"}
                 </p>
               </div>

@@ -3,6 +3,8 @@ package com.example.demo.reservation;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import java.time.LocalDate;
@@ -14,8 +16,10 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import org.mockito.ArgumentCaptor;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import com.example.demo.common.ResourceNotFoundException;
 import com.example.demo.reservation.dto.ReservationCreateRequest;
 import com.example.demo.reservation.dto.ReservationResponse;
 import com.example.demo.room.RoomTypeDetails;
@@ -98,5 +102,55 @@ class ReservationServiceTest {
         assertEquals(RoomType.DOUBLE, response.roomType());
         assertEquals(ReservationStatus.BOOKED, response.status());
         assertEquals("customer-id-1", response.customerId());
+    }
+
+    @Test
+    void createMyReservation_throwsWhenCheckoutBeforeCheckin() {
+        ReservationCreateRequest request = new ReservationCreateRequest(
+                "Guest C",
+                "Address",
+                "+94772222222",
+                RoomType.SINGLE,
+                LocalDate.now().plusDays(10),
+                LocalDate.now().plusDays(5));
+
+        IllegalArgumentException ex = assertThrows(
+                IllegalArgumentException.class,
+                () -> reservationService.createMyReservation(request));
+
+        assertEquals("Check-out date must be after check-in date", ex.getMessage());
+    }
+
+    @Test
+    void cancelMyReservation_setsCancelledWhenOwnedByCustomer() {
+        Reservation reservation = new Reservation();
+        reservation.setReservationNo("RSV-TEST1234");
+        reservation.setCustomerId("customer-id-1");
+        reservation.setStatus(ReservationStatus.BOOKED);
+
+        when(reservationRepository.findByReservationNo("RSV-TEST1234")).thenReturn(Optional.of(reservation));
+
+        reservationService.cancelMyReservation("RSV-TEST1234");
+
+        ArgumentCaptor<Reservation> reservationCaptor = ArgumentCaptor.forClass(Reservation.class);
+        verify(reservationRepository).save(reservationCaptor.capture());
+        assertEquals(ReservationStatus.CANCELLED, reservationCaptor.getValue().getStatus());
+    }
+
+    @Test
+    void cancelMyReservation_throwsWhenOwnedByDifferentCustomer() {
+        Reservation reservation = new Reservation();
+        reservation.setReservationNo("RSV-OTHER123");
+        reservation.setCustomerId("other-customer-id");
+        reservation.setStatus(ReservationStatus.BOOKED);
+
+        when(reservationRepository.findByReservationNo("RSV-OTHER123")).thenReturn(Optional.of(reservation));
+
+        ResourceNotFoundException ex = assertThrows(
+                ResourceNotFoundException.class,
+                () -> reservationService.cancelMyReservation("RSV-OTHER123"));
+
+        assertEquals("Reservation not found", ex.getMessage());
+        verify(reservationRepository, never()).save(any(Reservation.class));
     }
 }
