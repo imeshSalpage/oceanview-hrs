@@ -11,6 +11,7 @@ import { Button } from "@/components/ui/button";
 import { api } from "@/lib/api";
 import { getToken, setToken } from "@/lib/auth";
 import { formatCurrency } from "@/lib/format";
+import { extractIdNumberFromImage } from "@/lib/id-extractor";
 import type { AuthResponse, RoomAvailabilityResponse, RoomTypeDetails } from "@/lib/types";
 
 /* ── tiny helper label/field wrapper ── */
@@ -32,12 +33,14 @@ export default function RoomDetailPage() {
   const [bookingError, setBookingError] = useState<string | null>(null);
   const [isChecking, setIsChecking] = useState(false);
   const [isBooking, setIsBooking] = useState(false);
+  const [isExtractingId, setIsExtractingId] = useState(false);
   const [form, setForm] = useState({
     checkInDate: "",
     checkOutDate: "",
     guestName: "",
     contactNo: "",
     address: "",
+    idNumber: "",
   });
   const [account, setAccount] = useState({ username: "", email: "", password: "" });
 
@@ -107,6 +110,60 @@ export default function RoomDetailPage() {
       setBookingError(err instanceof Error ? err.message : "Failed to create reservation");
     } finally {
       setIsBooking(false);
+    }
+  };
+
+  const applyScannedIdData = (rawValue: string) => {
+    const normalized = rawValue.trim();
+    if (!normalized) {
+      return;
+    }
+
+    const parts = normalized.split(/[|,]/).map((part) => part.trim()).filter(Boolean);
+
+    if (parts.length >= 2) {
+      setForm((previous) => ({
+        ...previous,
+        idNumber: parts[0],
+        guestName: parts.slice(1).join(" "),
+      }));
+      setBookingError(null);
+      return;
+    }
+
+    setForm((previous) => ({ ...previous, idNumber: normalized }));
+    setBookingError(null);
+  };
+
+  const scanIdCard = () => {
+    const scanInput = window.prompt("Scan/paste ID data. Use format: ID_NUMBER|FULL_NAME");
+    if (!scanInput) {
+      return;
+    }
+    applyScannedIdData(scanInput);
+  };
+
+  const uploadIdImage = async (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+    event.target.value = "";
+    if (!file) {
+      return;
+    }
+
+    setIsExtractingId(true);
+    try {
+      const extractedId = await extractIdNumberFromImage(file);
+      if (!extractedId) {
+        setBookingError("No ID number detected in uploaded image");
+        return;
+      }
+
+      setForm((previous) => ({ ...previous, idNumber: extractedId }));
+      setBookingError(null);
+    } catch {
+      setBookingError("Failed to extract ID number from image");
+    } finally {
+      setIsExtractingId(false);
     }
   };
 
@@ -223,6 +280,36 @@ export default function RoomDetailPage() {
                     value={form.checkOutDate}
                     onChange={(e) => setForm((p) => ({ ...p, checkOutDate: e.target.value }))}
                   />
+                </Field>
+                <Field label="ID Number (not saved yet)">
+                  <input
+                    className="ocean-input"
+                    placeholder="NIC / Passport number"
+                    value={form.idNumber}
+                    onChange={(e) => setForm((p) => ({ ...p, idNumber: e.target.value }))}
+                  />
+                </Field>
+                <Field label="Scan ID">
+                  <Button type="button" variant="outline" className="w-full" onClick={scanIdCard}>
+                    Scan / Paste ID Data
+                  </Button>
+                </Field>
+                <Field label="Upload ID Image">
+                  <div className="space-y-2">
+                    <input
+                      type="file"
+                      accept="image/*"
+                      className="ocean-input"
+                      onChange={uploadIdImage}
+                      disabled={isExtractingId}
+                    />
+                    <p className="text-xs text-slate-500">{isExtractingId ? "Extracting ID..." : "Uploads image and extracts ID number automatically."}</p>
+                    {form.idNumber ? (
+                      <p className="text-xs font-semibold text-slate-700">Extracted ID: {form.idNumber}</p>
+                    ) : (
+                      <p className="text-xs text-slate-400">No ID extracted yet.</p>
+                    )}
+                  </div>
                 </Field>
                 <Field label="Guest name">
                   <input

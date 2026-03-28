@@ -11,6 +11,7 @@ import { Button } from "@/components/ui/button";
 import { api } from "@/lib/api";
 import { formatCurrency, formatDate } from "@/lib/format";
 import { useRoleGuard } from "@/lib/guard";
+import { extractIdNumberFromImage } from "@/lib/id-extractor";
 import type { BillResponse, ReservationResponse, ReservationStatus, RoomType } from "@/lib/types";
 
 const roomTypes: RoomType[] = ["SINGLE", "DOUBLE", "DELUXE", "SUITE"];
@@ -43,6 +44,8 @@ export default function ReservationsPage() {
   const [startDate, setStartDate] = useState("");
   const [endDate, setEndDate] = useState("");
   const [toast, setToast] = useState<{ message: string; tone: "success" | "info" } | null>(null);
+  const [idNumber, setIdNumber] = useState("");
+  const [isExtractingId, setIsExtractingId] = useState(false);
 
   const [createData, setCreateData] = useState({
     customerId: "",
@@ -390,9 +393,61 @@ export default function ReservationsPage() {
         checkInDate: "",
         checkOutDate: "",
       });
+      setIdNumber("");
       await loadReservations();
     } catch (err) {
       setError(err instanceof Error ? err.message : "Failed to create reservation");
+    }
+  };
+
+  const applyScannedIdData = (rawValue: string) => {
+    const normalized = rawValue.trim();
+    if (!normalized) {
+      return;
+    }
+
+    const parts = normalized.split(/[|,]/).map((part) => part.trim()).filter(Boolean);
+
+    if (parts.length >= 2) {
+      setIdNumber(parts[0]);
+      setCreateData((previous) => ({ ...previous, guestName: parts.slice(1).join(" ") }));
+      setToast({ message: "ID scanned and guest name filled", tone: "info" });
+      return;
+    }
+
+    setIdNumber(normalized);
+    setToast({ message: "ID scanned", tone: "info" });
+  };
+
+  const scanIdCard = () => {
+    const scanInput = window.prompt("Scan/paste ID data. Use format: ID_NUMBER|FULL_NAME");
+    if (!scanInput) {
+      return;
+    }
+    applyScannedIdData(scanInput);
+  };
+
+  const uploadIdImage = async (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+    event.target.value = "";
+    if (!file) {
+      return;
+    }
+
+    setIsExtractingId(true);
+    try {
+      const extractedId = await extractIdNumberFromImage(file);
+      if (!extractedId) {
+        setToast({ message: "No ID number detected in image", tone: "info" });
+        return;
+      }
+
+      setIdNumber(extractedId);
+      setToast({ message: "ID extracted from image", tone: "success" });
+    } catch {
+      setToast({ message: "Failed to extract ID from image", tone: "info" });
+    } finally {
+      setIsExtractingId(false);
     }
   };
 
@@ -431,6 +486,33 @@ export default function ReservationsPage() {
           <h2 className="text-sm font-bold uppercase tracking-wide text-slate-700">Create reservation</h2>
           <form className="grid gap-4" onSubmit={createReservation}>
             <div className="grid gap-4 md:grid-cols-3">
+              <div className="space-y-1.5">
+                <label className="text-xs font-semibold uppercase tracking-wide text-slate-500">ID Number (frontend only)</label>
+                <input className="ocean-input" value={idNumber} placeholder="NIC / Passport number"
+                  onChange={(e) => setIdNumber(e.target.value)} />
+              </div>
+              <div className="space-y-1.5">
+                <label className="text-xs font-semibold uppercase tracking-wide text-slate-500">Scan ID</label>
+                <Button type="button" variant="outline" className="w-full" onClick={scanIdCard}>
+                  Scan / Paste ID Data
+                </Button>
+              </div>
+              <div className="space-y-1.5">
+                <label className="text-xs font-semibold uppercase tracking-wide text-slate-500">Upload ID Image</label>
+                <input
+                  type="file"
+                  accept="image/*"
+                  className="ocean-input"
+                  onChange={uploadIdImage}
+                  disabled={isExtractingId}
+                />
+                <p className="text-xs text-slate-500">{isExtractingId ? "Extracting ID..." : "Uploads image and extracts ID number automatically."}</p>
+                {idNumber ? (
+                  <p className="text-xs font-semibold text-slate-700">Extracted ID: {idNumber}</p>
+                ) : (
+                  <p className="text-xs text-slate-400">No ID extracted yet.</p>
+                )}
+              </div>
               <div className="space-y-1.5">
                 <label className="text-xs font-semibold uppercase tracking-wide text-slate-500">Customer ID (optional)</label>
                 <input className="ocean-input" value={createData.customerId} placeholder="MongoDB user id"
