@@ -552,7 +552,93 @@ export default function RoomDetailPage() {
               </div>
             </section>
 
-            <section className="grid gap-8 lg:grid-cols-[1.25fr_0.95fr]">
+            <section className="grid gap-8 lg:grid-cols-[1fr_0.9fr]">
+              <div className="space-y-6 lg:order-1">
+                <div className="card-ocean rounded-2xl p-6 space-y-5">
+                  <h2 className="text-lg font-bold text-slate-900">Room highlights</h2>
+                  <div className="grid grid-cols-2 gap-3">
+                    {[
+                      { Icon: BedDouble, label: "Bed type", value: room.bedType },
+                      { Icon: Ruler, label: "Room size", value: `${room.sizeSqm} sqm` },
+                      { Icon: Users, label: "Max guests", value: `Up to ${room.maxGuests}` },
+                      { Icon: Building2, label: "Inventory", value: `${room.totalRooms} rooms` },
+                    ].map((spec) => (
+                      <div key={spec.label} className="rounded-xl bg-sky-50 p-3 border border-sky-100">
+                        <spec.Icon className="h-5 w-5 text-sky-700" />
+                        <p className="mt-1 text-xs font-semibold uppercase tracking-wide text-slate-500">{spec.label}</p>
+                        <p className="text-sm font-medium text-slate-900">{spec.value}</p>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+
+                <div className="grid gap-6 md:grid-cols-2">
+                  <div className="card-ocean rounded-2xl p-6 space-y-4">
+                    <h3 className="text-sm font-bold uppercase tracking-wide text-slate-700">Amenities</h3>
+                    <ul className="space-y-2">
+                      {room.amenities.map((amenity) => (
+                        <li key={amenity} className="flex items-center gap-2 text-sm text-slate-700">
+                          <Check className="h-4 w-4 text-emerald-600" />
+                          {amenity}
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+                  <div className="card-ocean rounded-2xl p-6 space-y-4">
+                    <h3 className="text-sm font-bold uppercase tracking-wide text-slate-700">Facilities</h3>
+                    <ul className="space-y-2">
+                      {room.facilities.map((facility) => (
+                        <li key={facility} className="flex items-center gap-2 text-sm text-slate-700">
+                          <Check className="h-4 w-4 text-sky-700" />
+                          {facility}
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+                </div>
+
+                <div className="space-y-4">
+                  <div className="card-ocean rounded-3xl p-6 space-y-4">
+                    <div className="flex items-center justify-between">
+                      <h3 className="text-base font-bold text-slate-900">Booking summary</h3>
+                      <span className="inline-flex items-center gap-1 rounded-full bg-sky-50 px-2 py-1 text-xs font-semibold text-sky-700 border border-sky-100">
+                        <CalendarClock className="h-3.5 w-3.5" />
+                        Live quote
+                      </span>
+                    </div>
+
+                    <div className="rounded-2xl border border-slate-200 bg-white/70 p-4 space-y-2 text-sm text-slate-700">
+                      <div className="flex items-center justify-between">
+                        <span>{formatCurrency(room.ratePerNight)} x {nights || 0} night(s)</span>
+                        <span className="font-medium text-slate-900">{formatCurrency(pricing.base)}</span>
+                      </div>
+                      <div className="flex items-center justify-between">
+                        <span>Service fee (8%)</span>
+                        <span>{formatCurrency(pricing.serviceFee)}</span>
+                      </div>
+                      <div className="flex items-center justify-between">
+                        <span>Taxes (12%)</span>
+                        <span>{formatCurrency(pricing.taxes)}</span>
+                      </div>
+                      <div className="border-t border-slate-200 pt-2 flex items-center justify-between text-base font-bold text-slate-900">
+                        <span>Total</span>
+                        <span>{formatCurrency(pricing.total)}</span>
+                      </div>
+                    </div>
+
+                    <div className="space-y-2 rounded-2xl bg-slate-50 border border-slate-200 px-4 py-3 text-xs text-slate-600">
+                      <p className="font-semibold uppercase tracking-wide text-slate-500">Your stay</p>
+                      <p>
+                        {form.checkInDate || "--"} to {form.checkOutDate || "--"}
+                      </p>
+                      <p>
+                        {guestCount} guest(s), arrival around {form.arrivalTime || "--"}
+                      </p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
               <div className="sticky top-24 h-fit lg:order-2">
                 <div className="ocean-surface rounded-[40px] p-8 space-y-8 relative overflow-hidden ring-1 ring-sky-100/40">
                   <div className="absolute top-0 right-0 p-8 pointer-events-none opacity-10">
@@ -732,9 +818,9 @@ export default function RoomDetailPage() {
 
                         <div className="flex flex-col gap-3 pt-2">
                           <div className="flex items-center gap-2">
-                            <div className="h-[1px] flex-1 bg-slate-100" />
+                            <div className="h-px flex-1 bg-slate-100" />
                             <span className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">or scan</span>
-                            <div className="h-[1px] flex-1 bg-slate-100" />
+                            <div className="h-px flex-1 bg-slate-100" />
                           </div>
                           <div className="grid grid-cols-2 gap-3">
                             <Button 
@@ -917,113 +1003,6 @@ export default function RoomDetailPage() {
                 </div>
               </div>
 
-              <div className="space-y-6 lg:order-1">
-                <div className="card-ocean rounded-2xl p-6 space-y-5">
-                  <h2 className="text-lg font-bold text-slate-900">Room highlights</h2>
-                  <div className="grid grid-cols-2 gap-3">
-                    {[
-                      { Icon: BedDouble, label: "Bed type", value: room.bedType },
-                      { Icon: Ruler, label: "Room size", value: `${room.sizeSqm} sqm` },
-                      { Icon: Users, label: "Max guests", value: `Up to ${room.maxGuests}` },
-                      { Icon: Building2, label: "Inventory", value: `${room.totalRooms} rooms` },
-                    ].map((spec) => (
-                      <div key={spec.label} className="rounded-xl bg-sky-50 p-3 border border-sky-100">
-                        <spec.Icon className="h-5 w-5 text-sky-700" />
-                        <p className="mt-1 text-xs font-semibold uppercase tracking-wide text-slate-500">{spec.label}</p>
-                        <p className="text-sm font-medium text-slate-900">{spec.value}</p>
-                      </div>
-                    ))}
-                  </div>
-                </div>
-
-                <div className="grid gap-6 md:grid-cols-2">
-                  <div className="card-ocean rounded-2xl p-6 space-y-4">
-                    <h3 className="text-sm font-bold uppercase tracking-wide text-slate-700">Amenities</h3>
-                    <ul className="space-y-2">
-                      {room.amenities.map((amenity) => (
-                        <li key={amenity} className="flex items-center gap-2 text-sm text-slate-700">
-                          <Check className="h-4 w-4 text-emerald-600" />
-                          {amenity}
-                        </li>
-                      ))}
-                    </ul>
-                  </div>
-                  <div className="card-ocean rounded-2xl p-6 space-y-4">
-                    <h3 className="text-sm font-bold uppercase tracking-wide text-slate-700">Facilities</h3>
-                    <ul className="space-y-2">
-                      {room.facilities.map((facility) => (
-                        <li key={facility} className="flex items-center gap-2 text-sm text-slate-700">
-                          <Check className="h-4 w-4 text-sky-700" />
-                          {facility}
-                        </li>
-                      ))}
-                    </ul>
-                  </div>
-                </div>
-
-                <div className="space-y-4">
-                  <div className="card-ocean rounded-3xl p-6 space-y-4">
-                    <div className="flex items-center justify-between">
-                      <h3 className="text-base font-bold text-slate-900">Booking summary</h3>
-                      <span className="inline-flex items-center gap-1 rounded-full bg-sky-50 px-2 py-1 text-xs font-semibold text-sky-700 border border-sky-100">
-                        <CalendarClock className="h-3.5 w-3.5" />
-                        Live quote
-                      </span>
-                    </div>
-
-                    <div className="rounded-2xl border border-slate-200 bg-white/70 p-4 space-y-2 text-sm text-slate-700">
-                      <div className="flex items-center justify-between">
-                        <span>{formatCurrency(room.ratePerNight)} x {nights || 0} night(s)</span>
-                        <span className="font-medium text-slate-900">{formatCurrency(pricing.base)}</span>
-                      </div>
-                      <div className="flex items-center justify-between">
-                        <span>Service fee (8%)</span>
-                        <span>{formatCurrency(pricing.serviceFee)}</span>
-                      </div>
-                      <div className="flex items-center justify-between">
-                        <span>Taxes (12%)</span>
-                        <span>{formatCurrency(pricing.taxes)}</span>
-                      </div>
-                      <div className="border-t border-slate-200 pt-2 flex items-center justify-between text-base font-bold text-slate-900">
-                        <span>Total</span>
-                        <span>{formatCurrency(pricing.total)}</span>
-                      </div>
-                    </div>
-
-                    <div className="space-y-2 rounded-2xl bg-slate-50 border border-slate-200 px-4 py-3 text-xs text-slate-600">
-                      <p className="font-semibold uppercase tracking-wide text-slate-500">Your stay</p>
-                      <p>
-                        {form.checkInDate || "--"} to {form.checkOutDate || "--"}
-                      </p>
-                      <p>
-                        {guestCount} guest(s), arrival around {form.arrivalTime || "--"}
-                      </p>
-                      <p className="inline-flex items-center gap-1.5 text-emerald-700">
-                        <CheckCircle2 className="h-3.5 w-3.5" />
-                        No prepayment required right now
-                      </p>
-                    </div>
-                  </div>
-
-                  <div className="card-ocean rounded-2xl p-4 text-sm text-slate-600">
-                    <p className="font-semibold text-slate-800">Booking policy</p>
-                    <ul className="mt-2 space-y-2">
-                      <li className="flex gap-2">
-                        <span className="mt-1 h-1.5 w-1.5 rounded-full bg-sky-500" />
-                        Free cancellation until 48 hours before check-in.
-                      </li>
-                      <li className="flex gap-2">
-                        <span className="mt-1 h-1.5 w-1.5 rounded-full bg-sky-500" />
-                        Valid photo ID required at check-in.
-                      </li>
-                      <li className="flex gap-2">
-                        <span className="mt-1 h-1.5 w-1.5 rounded-full bg-sky-500" />
-                        Check-in 3:00 PM, check-out 11:00 AM.
-                      </li>
-                    </ul>
-                  </div>
-                </div>
-              </div>
             </section>
           </div>
         ) : null}

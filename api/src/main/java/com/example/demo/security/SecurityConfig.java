@@ -41,7 +41,7 @@ public class SecurityConfig {
                 .authorizeHttpRequests(auth -> auth
                     .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
                     .requestMatchers(HttpMethod.GET, "/api/rooms/**").permitAll()
-                    .requestMatchers(HttpMethod.POST, "/api/auth/login", "/api/auth/register").permitAll()
+                    .requestMatchers(HttpMethod.POST, "/api/auth/login", "/api/auth/register", "/api/v1/ocr/extract").permitAll()
                     .requestMatchers("/api/auth/**", "/api/help").permitAll()
                         .anyRequest().authenticated())
                 .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
