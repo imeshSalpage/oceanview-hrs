@@ -62,7 +62,7 @@ function Field({ label, required, error, children }: { label: string; required?:
 const contactNoPattern = /^\+?[0-9]{7,15}$/;
 const fallbackRoomImageUrl = "https://placehold.co/1400x900/e2e8f0/475569?text=Ocean+View+Suite";
 
-function SectionTitle({ icon: Icon, title, subtitle }: { icon: any; title: string, subtitle?: string }) {
+function SectionTitle({ icon: Icon, title, subtitle }: { icon: React.ElementType; title: string, subtitle?: string }) {
   return (
     <div className="mb-6 space-y-1">
       <div className="flex items-center gap-2.5">
@@ -960,7 +960,7 @@ export default function RoomDetailPage() {
                             <Check className="absolute left-1 top-1 h-3 w-3 text-white transition-opacity opacity-0 peer-checked:opacity-100" />
                           </div>
                           <span className="text-xs font-medium leading-relaxed text-slate-600">
-                            I verify that details are correct and I accept the resort's{" "}
+                            I verify that details are correct and I accept the resort&apos;s{" "}
                             <span className="text-sky-700 font-bold hover:underline">booking and cancellation policy.</span>
                           </span>
                         </label>

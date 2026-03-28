@@ -88,7 +88,7 @@ function findIdData(text: string): ExtractedIdData {
   for (let i = 0; i < lines.length; i++) {
     const line = lines[i].toUpperCase();
     if (line.includes("ADDRESS") || line.includes("RESIDENCE")) {
-      let addrParts = [];
+      const addrParts = [];
       const inline = lines[i].split(/[:\-]/).slice(1).join(" ").trim();
       if (inline) addrParts.push(inline);
 
