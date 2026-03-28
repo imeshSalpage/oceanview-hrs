@@ -2,7 +2,7 @@ api-dev:
 	cd api && ./mvnw spring-boot:run
 
 api-test:
-	docker run --rm -v "$(PWD)/api":/workspace -w /workspace maven:3.9.6-eclipse-temurin-21 mvn test
+	docker run --rm -v "$(PWD)/api":/workspace -v "$(HOME)/.m2":/root/.m2 -w /workspace maven:3.9.6-eclipse-temurin-21 mvn test
 
 frontend-dev:
 	cd frontend && npm run dev
