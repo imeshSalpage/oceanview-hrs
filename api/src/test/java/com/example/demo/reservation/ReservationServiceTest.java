@@ -122,6 +122,23 @@ class ReservationServiceTest {
     }
 
     @Test
+    void createMyReservation_throwsWhenCheckinInPast() {
+        ReservationCreateRequest request = new ReservationCreateRequest(
+                "Guest D",
+                "Address",
+                "+94773333333",
+                RoomType.SINGLE,
+                LocalDate.now().minusDays(1),
+                LocalDate.now().plusDays(2));
+
+        IllegalArgumentException ex = assertThrows(
+                IllegalArgumentException.class,
+                () -> reservationService.createMyReservation(request));
+
+        assertEquals("Check-in date cannot be in the past", ex.getMessage());
+    }
+
+    @Test
     void cancelMyReservation_setsCancelledWhenOwnedByCustomer() {
         Reservation reservation = new Reservation();
         reservation.setReservationNo("RSV-TEST1234");

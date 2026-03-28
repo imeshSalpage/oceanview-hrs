@@ -5,6 +5,7 @@ import java.time.LocalDate;
 import com.example.demo.reservation.RoomType;
 
 import jakarta.validation.constraints.Future;
+import jakarta.validation.constraints.FutureOrPresent;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Pattern;
@@ -14,7 +15,7 @@ public record ReservationCreateRequest(
         String address,
         @NotBlank @Pattern(regexp = "^\\+?[0-9]{7,15}$") String contactNo,
         @NotNull RoomType roomType,
-        @NotNull LocalDate checkInDate,
+        @NotNull @FutureOrPresent LocalDate checkInDate,
         @NotNull @Future LocalDate checkOutDate
 ) {
 }

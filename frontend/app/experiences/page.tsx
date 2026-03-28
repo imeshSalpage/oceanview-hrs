@@ -12,6 +12,7 @@ const experiences = [
     description: "Sail with our naturalist guides and spot local wildlife at dawn. Watch the sun rise over the Indian Ocean from the water.",
     tag: "Nature & Wildlife",
     duration: "3 hours",
+    imageUrl: "https://images.unsplash.com/photo-1500375592092-40eb2168fd21?auto=format&fit=crop&w=1400&q=80",
   },
   {
     Icon: UtensilsCrossed,
@@ -19,6 +20,7 @@ const experiences = [
     description: "An intimate tasting menu from our executive chef, featuring coastal Sri Lankan flavors and the freshest catch of the day.",
     tag: "Culinary",
     duration: "2.5 hours",
+    imageUrl: "https://images.unsplash.com/photo-1414235077428-338989a2e8c0?auto=format&fit=crop&w=1400&q=80",
   },
   {
     Icon: Activity,
@@ -26,6 +28,7 @@ const experiences = [
     description: "Morning sessions held on our clifftop platform, overlooking the Indian Ocean. Suitable for all levels.",
     tag: "Wellness",
     duration: "1 hour",
+    imageUrl: "https://images.unsplash.com/photo-1506126613408-eca07ce68773?auto=format&fit=crop&w=1400&q=80",
   },
   {
     Icon: Leaf,
@@ -33,6 +36,7 @@ const experiences = [
     description: "Signature therapies using botanicals from our resort gardens. Includes herbal steam bath, body wrap, and deep-tissue massage.",
     tag: "Spa",
     duration: "2 hours",
+    imageUrl: "https://images.unsplash.com/photo-1544161515-4ab6ce6db874?auto=format&fit=crop&w=1400&q=80",
   },
   {
     Icon: Fish,
@@ -40,6 +44,7 @@ const experiences = [
     description: "Guided snorkel tours to the coral gardens just off our private jetty—a kaleidoscope of tropical fish awaits.",
     tag: "Adventure",
     duration: "1.5 hours",
+    imageUrl: "https://images.unsplash.com/photo-1551244072-5d12893278ab?auto=format&fit=crop&w=1400&q=80",
   },
   {
     Icon: GlassWater,
@@ -47,6 +52,7 @@ const experiences = [
     description: "Join our mixologist on the infinity deck for handcrafted tropical cocktails as the sun dips below the horizon.",
     tag: "Social",
     duration: "1.5 hours",
+    imageUrl: "https://images.unsplash.com/photo-1527529482837-4698179dc6ce?auto=format&fit=crop&w=1400&q=80",
   },
 ];
 
@@ -75,15 +81,20 @@ export default function ExperiencesPage() {
         <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
           {experiences.map((exp) => (
             <div key={exp.title} className="card-ocean group rounded-2xl overflow-hidden">
-              {/* colour band */}
-              <div className="hero-ocean h-2 w-full" />
-              <div className="space-y-4 p-6">
-                <div className="flex items-start justify-between gap-3">
-                  <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-sky-50 text-2xl border border-sky-100">
-                    <exp.Icon className="h-5 w-5 text-sky-700" />
-                  </div>
-                  <span className="ocean-pill mt-1">{exp.tag}</span>
+              <div className="relative h-44 w-full overflow-hidden">
+                <div
+                  className="h-full w-full bg-cover bg-center transition-transform duration-500 group-hover:scale-105"
+                  style={{ backgroundImage: `url(${exp.imageUrl})` }}
+                />
+                <div className="absolute inset-0 bg-gradient-to-t from-slate-900/55 via-slate-900/10 to-transparent" />
+                <div className="absolute left-4 top-4 flex h-11 w-11 items-center justify-center rounded-xl border border-white/40 bg-white/20 backdrop-blur-sm">
+                  <exp.Icon className="h-5 w-5 text-white" />
                 </div>
+                <span className="ocean-pill absolute right-4 top-4 border-white/50 bg-white/25 text-white">
+                  {exp.tag}
+                </span>
+              </div>
+              <div className="space-y-4 p-6">
                 <h2 className="text-lg font-bold text-slate-900">{exp.title}</h2>
                 <p className="text-sm leading-relaxed text-slate-600">{exp.description}</p>
                 <p className="flex items-center gap-1.5 text-xs font-medium text-sky-700">

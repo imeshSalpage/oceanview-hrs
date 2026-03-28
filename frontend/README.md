@@ -85,7 +85,7 @@ npm run test:all       # lint + unit + e2e
 
 ### Customer
 - `/my-reservations`
-- `/my-reservations/new`
+- `/my-reservations/new` (redirects to `/rooms`)
 - `/my-reservations/[reservationNo]`
 - `/my-reservations/[reservationNo]/bill`
 

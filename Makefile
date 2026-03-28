@@ -15,13 +15,13 @@ test:
 	cd frontend && npm run lint && npm run test:unit
 
 up:
-	docker compose up --build
+	docker compose up --build -d
 
 down:
 	docker compose down
 
 up-dev:
-	docker compose -f docker-compose.dev.yml up --build
+	docker compose -f docker-compose.dev.yml up --build -d
 
 down-dev:
 	docker compose -f docker-compose.dev.yml down

@@ -114,24 +114,32 @@ public class RoomTypeDetailsService {
         }
     }
 
-        public RoomAvailabilityResponse checkAvailability(RoomType roomType, LocalDate checkIn, LocalDate checkOut) {
+    public RoomAvailabilityResponse checkAvailability(RoomType roomType, LocalDate checkIn, LocalDate checkOut) {
+        if (checkIn.isBefore(LocalDate.now())) {
+            throw new IllegalArgumentException("Check-in date cannot be in the past");
+        }
+
+        if (checkOut.isBefore(checkIn) || checkOut.isEqual(checkIn)) {
+            throw new IllegalArgumentException("Check-out date must be after check-in date");
+        }
+
         RoomTypeDetails details = roomTypeDetailsRepository.findByRoomType(roomType)
-            .orElseThrow(() -> new ResourceNotFoundException("Room type not found"));
+                .orElseThrow(() -> new ResourceNotFoundException("Room type not found"));
 
         int totalRooms = details.getTotalRooms() != null ? details.getTotalRooms() : 0;
         int bookedRooms = reservationRepository
-            .findOverlappingReservations(roomType, checkIn, checkOut)
-            .size();
+                .findOverlappingReservations(roomType, checkIn, checkOut)
+                .size();
         int availableRooms = Math.max(totalRooms - bookedRooms, 0);
 
         return new RoomAvailabilityResponse(
-            roomType,
-            totalRooms,
-            bookedRooms,
-            availableRooms,
-            availableRooms > 0
+                roomType,
+                totalRooms,
+                bookedRooms,
+                availableRooms,
+                availableRooms > 0
         );
-        }
+    }
 
     private List<RoomTypeDetailsResponse> sortByRoomType(List<RoomTypeDetails> details) {
         Map<RoomType, RoomTypeDetailsResponse> mapped = details.stream()

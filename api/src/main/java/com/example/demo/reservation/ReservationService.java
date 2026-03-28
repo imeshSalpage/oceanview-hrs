@@ -132,6 +132,10 @@ public class ReservationService {
     }
 
     private void validateDates(LocalDate checkIn, LocalDate checkOut) {
+        if (checkIn.isBefore(LocalDate.now())) {
+            throw new IllegalArgumentException("Check-in date cannot be in the past");
+        }
+
         if (checkOut.isBefore(checkIn) || checkOut.isEqual(checkIn)) {
             throw new IllegalArgumentException("Check-out date must be after check-in date");
         }

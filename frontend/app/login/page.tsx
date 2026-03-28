@@ -10,7 +10,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { api } from "@/lib/api";
-import { setToken } from "@/lib/auth";
+import { clearToken, setToken } from "@/lib/auth";
 import type { AuthResponse } from "@/lib/types";
 
 export default function LoginPage() {
@@ -35,6 +35,8 @@ export default function LoginPage() {
         window.location.href = "/dashboard";
       }
     } catch (err) {
+      // Prevent stale sessions from previous users after a failed login attempt.
+      clearToken();
       setError(err instanceof Error ? err.message : "Login failed");
     } finally {
       setLoading(false);
