@@ -2,7 +2,8 @@ name: PR Quality Gate
 
 on:
   pull_request:
-    branches: ["**"]
+    branches: ["master"]
+    types: [opened, synchronize, reopened]
 
 jobs:
   backend-tests:

@@ -1,6 +1,8 @@
 import Link from "next/link";
 import {
+  Compass,
   Fish,
+  Landmark,
   Lock,
   Shell,
   UtensilsCrossed,
@@ -50,6 +52,25 @@ const highlights = [
     Icon: Lock,
     title: "Secure Booking",
     description: "Instant confirmation, transparent billing, no hidden fees.",
+  },
+];
+
+const nearbySummaries = [
+  {
+    Icon: Compass,
+    title: "Nearby Activities",
+    href: "/nearby-activities",
+    description: "Whale watching, reef snorkelling, village tuk-tuk safaris, and sunset photo tours.",
+    imageUrl: "https://images.unsplash.com/photo-1500375592092-40eb2168fd21?auto=format&fit=crop&w=1400&q=80",
+    quickList: ["Adventure picks", "Guided options", "Transport arranged"],
+  },
+  {
+    Icon: Landmark,
+    title: "Nearby Places to Visit",
+    href: "/nearby-places",
+    description: "Explore Galle Fort landmarks, hidden beaches, museums, and local craft streets.",
+    imageUrl: "https://images.unsplash.com/photo-1548013146-72479768bada?auto=format&fit=crop&w=1400&q=80",
+    quickList: ["Heritage landmarks", "Beach escapes", "Culture and shopping"],
   },
 ];
 
@@ -163,6 +184,46 @@ export default function Home() {
               <h3 className="font-semibold text-slate-900">{h.title}</h3>
               <p className="text-sm leading-relaxed text-slate-600">{h.description}</p>
             </div>
+          ))}
+        </div>
+      </section>
+
+      {/* ── Nearby discovery summary ── */}
+      <section className="mx-auto w-full max-w-6xl px-6 pb-24">
+        <div className="mb-10 text-center">
+          <span className="ocean-pill">Explore Beyond Resort</span>
+          <h2 className="mt-4 text-3xl font-bold text-slate-900">Nearby discoveries at a glance</h2>
+          <p className="mx-auto mt-3 max-w-lg text-slate-600">
+            Plan your stay with nearby adventures and must-visit places, all within easy reach.
+          </p>
+        </div>
+
+        <div className="grid gap-6 lg:grid-cols-2">
+          {nearbySummaries.map((item) => (
+            <article key={item.title} className="card-ocean overflow-hidden rounded-3xl">
+              <div className="relative h-48 w-full overflow-hidden">
+                <div className="h-full w-full bg-cover bg-center" style={{ backgroundImage: `url(${item.imageUrl})` }} />
+                <div className="absolute inset-0 bg-gradient-to-t from-slate-900/60 via-slate-900/10 to-transparent" />
+                <div className="absolute left-4 top-4 flex h-11 w-11 items-center justify-center rounded-xl border border-white/40 bg-white/20 backdrop-blur-sm">
+                  <item.Icon className="h-5 w-5 text-white" />
+                </div>
+              </div>
+
+              <div className="space-y-4 p-6">
+                <h3 className="text-xl font-bold text-slate-900">{item.title}</h3>
+                <p className="text-sm leading-relaxed text-slate-600">{item.description}</p>
+                <div className="flex flex-wrap gap-2">
+                  {item.quickList.map((point) => (
+                    <span key={point} className="rounded-full border border-sky-100 bg-sky-50 px-3 py-1 text-xs font-medium text-sky-800">
+                      {point}
+                    </span>
+                  ))}
+                </div>
+                <Button asChild>
+                  <Link href={item.href}>View details</Link>
+                </Button>
+              </div>
+            </article>
           ))}
         </div>
       </section>

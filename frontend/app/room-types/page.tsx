@@ -1,5 +1,6 @@
 "use client";
 
+import Image from "next/image";
 import { useEffect, useState } from "react";
 import { AlertTriangle, Building2, ShieldCheck, Trash2 } from "lucide-react";
 
@@ -10,6 +11,7 @@ import { Button } from "@/components/ui/button";
 import { api } from "@/lib/api";
 import { useRoleGuard } from "@/lib/guard";
 import type { RoomTypeDetails } from "@/lib/types";
+const fallbackRoomImageUrl = "https://placehold.co/600x400/e2e8f0/475569?text=Ocean+View+Room";
 
 interface RoomTypeFormState extends RoomTypeDetails {
   amenitiesText: string;
@@ -289,11 +291,13 @@ export default function RoomTypesPage() {
                   {room.imageUrls.length > 0 ? (
                     <div className="grid grid-cols-3 gap-2 sm:grid-cols-5">
                       {room.imageUrls.slice(0, 5).map((url, imageIndex) => (
-                        <div key={`${room.roomType}-${imageIndex}`} className="relative">
-                          <img
-                            src={url}
+                        <div key={`${room.roomType}-${imageIndex}`} className="relative h-16 w-full overflow-hidden rounded-lg border border-sky-100">
+                          <Image
+                            src={url || fallbackRoomImageUrl}
                             alt={`${room.name} preview ${imageIndex + 1}`}
-                            className="h-16 w-full rounded-lg border border-sky-100 object-cover"
+                            fill
+                            className="object-cover"
+                            unoptimized
                           />
                           <button
                             type="button"

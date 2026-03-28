@@ -43,6 +43,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                     SecurityContextHolder.getContext().setAuthentication(authentication);
                 }
             } catch (Exception ignored) {
+                SecurityContextHolder.clearContext();
                 // Ignore invalid tokens and continue without authentication
             }
         }

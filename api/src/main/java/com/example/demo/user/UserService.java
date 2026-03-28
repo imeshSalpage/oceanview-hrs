@@ -50,6 +50,9 @@ public class UserService {
     public UserResponse updateRole(String id, UserRoleUpdateRequest request) {
         User user = userRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("User not found"));
+        if (user.getRole() == Role.CUSTOMER) {
+            throw new IllegalArgumentException("Role changes are disabled for customer accounts");
+        }
         user.setRole(request.role());
         return userMapper.toResponse(userRepository.save(user));
     }

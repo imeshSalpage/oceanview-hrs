@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import { useParams } from "next/navigation";
 import { useEffect, useState } from "react";
 import { FileText } from "lucide-react";
 
@@ -10,13 +11,10 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 
 import { api } from "@/lib/api";
+import { getToken, getUsernameFromToken } from "@/lib/auth";
 import { formatDate } from "@/lib/format";
 import { useRoleGuard } from "@/lib/guard";
 import type { ReservationResponse } from "@/lib/types";
-
-interface PageProps {
-  params: { reservationNo: string };
-}
 
 const statusColor: Record<string, "default" | "success" | "warning" | "danger"> = {
   BOOKED: "default",
@@ -25,17 +23,44 @@ const statusColor: Record<string, "default" | "success" | "warning" | "danger"> 
   CANCELLED: "danger",
 };
 
-export default function ReservationDetailPage({ params }: PageProps) {
+export default function ReservationDetailPage() {
+  const params = useParams();
+  const reservationNoParam = params?.reservationNo;
+  const reservationNoRaw = Array.isArray(reservationNoParam)
+    ? reservationNoParam[0] ?? ""
+    : reservationNoParam ?? "";
+
   const guard = useRoleGuard(["CUSTOMER"], "/login");
+  const signedInUsername = getUsernameFromToken(getToken());
+  const reservationNo = reservationNoRaw.trim().toUpperCase();
   const [reservation, setReservation] = useState<ReservationResponse | null>(null);
+  const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
+    if (!reservationNo) {
+      setLoading(false);
+      setError("Invalid reservation number.");
+      return;
+    }
+
+    setLoading(true);
+    setError(null);
+    setReservation(null);
+
     api
-      .get<ReservationResponse>(`/api/my/reservations/${params.reservationNo}`)
+      .get<ReservationResponse>(`/api/my/reservations/${reservationNo}`)
       .then(setReservation)
-      .catch((err) => setError(err instanceof Error ? err.message : "Failed to load reservation"));
-  }, [params.reservationNo]);
+      .catch((err) => {
+        const message = err instanceof Error ? err.message : "Failed to load reservation";
+        if (message === "Reservation not found") {
+          setError("Reservation not found for this account. Please sign in with the account that created it.");
+          return;
+        }
+        setError(message);
+      })
+      .finally(() => setLoading(false));
+  }, [reservationNo]);
 
   if (!guard.isClient || !guard.isAllowed) {
     return null;
@@ -53,7 +78,7 @@ export default function ReservationDetailPage({ params }: PageProps) {
         />
         <span className="ocean-pill mb-4 inline-flex items-center gap-1.5"><FileText className="h-3.5 w-3.5" />Reservation Details</span>
         <h1 className="text-4xl font-bold tracking-tight text-slate-900 sm:text-5xl">Stay Overview</h1>
-        <p className="mx-auto mt-3 max-w-md text-slate-600">Reservation #{params.reservationNo}</p>
+        <p className="mx-auto mt-3 max-w-md text-slate-600">Reservation #{reservationNo}</p>
       </section>
 
       <main className="mx-auto w-full max-w-6xl space-y-8 px-6 pb-24">
@@ -64,10 +89,17 @@ export default function ReservationDetailPage({ params }: PageProps) {
           </Button>
         </div>
 
-        {error ? <p className="text-sm text-rose-500">{error}</p> : null}
-
-        {reservation ? (
-          <div className="card-ocean max-w-3xl rounded-3xl overflow-hidden">
+        {loading ? (
+          <p className="text-sm text-slate-500">Loading reservation details...</p>
+        ) : error ? (
+          <div className="space-y-1">
+            <p className="text-sm text-rose-500">{error}</p>
+            {signedInUsername ? (
+              <p className="text-xs text-slate-500">Signed in as: {signedInUsername}</p>
+            ) : null}
+          </div>
+        ) : reservation ? (
+          <div className="card-ocean w-full rounded-3xl overflow-hidden">
             <div className="flex items-center justify-between px-6 py-4 border-b border-sky-100/60">
               <h3 className="text-base font-semibold text-slate-900">{reservation.guestName}</h3>
               <Badge variant={statusColor[reservation.status] || "default"}>
@@ -76,28 +108,28 @@ export default function ReservationDetailPage({ params }: PageProps) {
             </div>
             <div className="grid gap-4 sm:grid-cols-2 p-6">
               <div>
-                <p className="text-xs uppercase text-slate-400">Room Type</p>
-                <p className="text-sm font-medium text-slate-900 dark:text-white">{reservation.roomType}</p>
+                <p className="text-xs uppercase text-slate-600">Room Type</p>
+                <p className="text-sm font-medium text-slate-900">{reservation.roomType}</p>
               </div>
               <div>
-                <p className="text-xs uppercase text-slate-400">Contact</p>
-                <p className="text-sm font-medium text-slate-900 dark:text-white">{reservation.contactNo}</p>
+                <p className="text-xs uppercase text-slate-600">Contact</p>
+                <p className="text-sm font-medium text-slate-900">{reservation.contactNo}</p>
               </div>
               <div>
-                <p className="text-xs uppercase text-slate-400">Check-in</p>
-                <p className="text-sm font-medium text-slate-900 dark:text-white">
+                <p className="text-xs uppercase text-slate-600">Check-in</p>
+                <p className="text-sm font-medium text-slate-900">
                   {formatDate(reservation.checkInDate)}
                 </p>
               </div>
               <div>
-                <p className="text-xs uppercase text-slate-400">Check-out</p>
-                <p className="text-sm font-medium text-slate-900 dark:text-white">
+                <p className="text-xs uppercase text-slate-600">Check-out</p>
+                <p className="text-sm font-medium text-slate-900">
                   {formatDate(reservation.checkOutDate)}
                 </p>
               </div>
               <div className="sm:col-span-2">
-                <p className="text-xs uppercase text-slate-400">Address</p>
-                <p className="text-sm font-medium text-slate-900 dark:text-white">
+                <p className="text-xs uppercase text-slate-600">Address</p>
+                <p className="text-sm font-medium text-slate-900">
                   {reservation.address || "Not provided"}
                 </p>
               </div>
@@ -109,7 +141,7 @@ export default function ReservationDetailPage({ params }: PageProps) {
             </div>
           </div>
         ) : (
-          <p className="text-sm text-slate-500">Loading reservation details...</p>
+          <p className="text-sm text-slate-500">Reservation not found.</p>
         )}
       </main>
       <SiteFooter />

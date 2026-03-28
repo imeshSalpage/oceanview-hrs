@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import { useParams } from "next/navigation";
 import { useEffect, useState } from "react";
 import { Receipt } from "lucide-react";
 
@@ -13,21 +14,29 @@ import { formatCurrency } from "@/lib/format";
 import { useRoleGuard } from "@/lib/guard";
 import type { BillResponse } from "@/lib/types";
 
-interface PageProps {
-  params: { reservationNo: string };
-}
+export default function BillPage() {
+  const params = useParams();
+  const reservationNoParam = params?.reservationNo;
+  const reservationNoRaw = Array.isArray(reservationNoParam)
+    ? reservationNoParam[0] ?? ""
+    : reservationNoParam ?? "";
 
-export default function BillPage({ params }: PageProps) {
   const guard = useRoleGuard(["CUSTOMER"], "/login");
+  const reservationNo = reservationNoRaw.trim().toUpperCase();
   const [bill, setBill] = useState<BillResponse | null>(null);
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
+    if (!reservationNo) {
+      setError("Invalid reservation number.");
+      return;
+    }
+
     api
-      .get<BillResponse>(`/api/my/reservations/${params.reservationNo}/bill`)
+      .get<BillResponse>(`/api/my/reservations/${reservationNo}/bill`)
       .then(setBill)
       .catch((err) => setError(err instanceof Error ? err.message : "Failed to load bill"));
-  }, [params.reservationNo]);
+  }, [reservationNo]);
 
   if (!guard.isClient || !guard.isAllowed) {
     return null;
@@ -45,14 +54,14 @@ export default function BillPage({ params }: PageProps) {
         />
         <span className="ocean-pill mb-4 inline-flex items-center gap-1.5"><Receipt className="h-3.5 w-3.5" />Bill</span>
         <h1 className="text-4xl font-bold tracking-tight text-slate-900 sm:text-5xl">Reservation Bill</h1>
-        <p className="mx-auto mt-3 max-w-md text-slate-600">{params.reservationNo}</p>
+        <p className="mx-auto mt-3 max-w-md text-slate-600">{reservationNo}</p>
       </section>
 
       <main className="mx-auto w-full max-w-4xl space-y-8 px-6 pb-24">
         <div className="flex items-center justify-between">
           <h2 className="text-xl font-semibold text-slate-900">Summary</h2>
           <Button asChild variant="outline">
-            <Link href={`/my-reservations/${params.reservationNo}`}>Back to details</Link>
+            <Link href={`/my-reservations/${reservationNo}`}>Back to details</Link>
           </Button>
         </div>
 

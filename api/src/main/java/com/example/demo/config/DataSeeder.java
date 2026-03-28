@@ -34,12 +34,12 @@ public class DataSeeder {
             @Value("${app.seed.default-password:Password@123}") String seedDefaultPassword) {
         return args -> {
             if (userRepository.count() == 0) {
-            User admin = createUser("admin", "admin@oceanviewresort.lk", Role.ADMIN, passwordEncoder,
-                seedDefaultPassword);
+                User admin = createUser("admin", "admin@oceanviewresort.lk", Role.ADMIN, passwordEncoder,
+                    seedDefaultPassword);
                 User reception = createUser("reception", "reception@oceanviewresort.lk", Role.RECEPTION,
-                passwordEncoder, seedDefaultPassword);
+                    passwordEncoder, seedDefaultPassword);
                 User customer = createUser("customer", "customer@oceanviewresort.lk", Role.CUSTOMER,
-                passwordEncoder, seedDefaultPassword);
+                    passwordEncoder, seedDefaultPassword);
                 userRepository.saveAll(List.of(admin, reception, customer));
             }
 
@@ -74,11 +74,11 @@ public class DataSeeder {
                         List.of("Plush linens", "Work desk", "Smart TV"),
                         List.of("Pool access", "Wi-Fi", "Daily housekeeping"),
                         List.of(
-                            "https://images.unsplash.com/photo-1505691938895-1758d7feb511?auto=format&fit=crop&w=1400&q=80",
-                            "https://images.unsplash.com/photo-1505691723518-36a5ac3be353?auto=format&fit=crop&w=1400&q=80",
-                            "https://images.unsplash.com/photo-1522771739844-6a9f6d5f14af?auto=format&fit=crop&w=1400&q=80",
-                            "https://images.unsplash.com/photo-1501876725168-00c445821c9e?auto=format&fit=crop&w=1400&q=80",
-                            "https://images.unsplash.com/photo-1505693416388-ac5ce068fe85?auto=format&fit=crop&w=1400&q=80"
+                            "https://images.unsplash.com/photo-1631049307264-da0ec9d70304?auto=format&fit=crop&w=1400&q=80",
+                            "https://images.unsplash.com/photo-1598928506311-c55ded91a20c?auto=format&fit=crop&w=1400&q=80",
+                            "https://images.unsplash.com/photo-1540518614846-7eded433c457?auto=format&fit=crop&w=1400&q=80",
+                            "https://images.unsplash.com/photo-1566665797739-1674de7a421a?auto=format&fit=crop&w=1400&q=80",
+                            "https://images.unsplash.com/photo-1586023492125-27b2c045efd7?auto=format&fit=crop&w=1400&q=80"
                         )
                     ),
                     createRoomTypeDetails(
@@ -93,11 +93,11 @@ public class DataSeeder {
                         List.of("Balcony seating", "Mini bar", "Rain shower"),
                         List.of("Room service", "Wi-Fi", "Fitness studio"),
                         List.of(
-                            "https://images.unsplash.com/photo-1505691938895-1758d7feb511?auto=format&fit=crop&w=1400&q=80",
-                            "https://images.unsplash.com/photo-1505691723518-36a5ac3be353?auto=format&fit=crop&w=1400&q=80",
-                            "https://images.unsplash.com/photo-1493809842364-78817add7ffb?auto=format&fit=crop&w=1400&q=80",
-                            "https://images.unsplash.com/photo-1505691938895-1758d7feb511?auto=format&fit=crop&w=1400&q=80",
-                            "https://images.unsplash.com/photo-1505691723518-36a5ac3be353?auto=format&fit=crop&w=1400&q=80"
+                            "https://images.unsplash.com/photo-1611892440504-42a792e24d32?auto=format&fit=crop&w=1400&q=80",
+                            "https://images.unsplash.com/photo-1590490360182-c33d57733427?auto=format&fit=crop&w=1400&q=80",
+                            "https://images.unsplash.com/photo-1582719478250-c89cae4dc85b?auto=format&fit=crop&w=1400&q=80",
+                            "https://images.unsplash.com/photo-1596394516093-501ba68a0ba6?auto=format&fit=crop&w=1400&q=80",
+                            "https://images.unsplash.com/photo-1560185893-a55cbc8c57e8?auto=format&fit=crop&w=1400&q=80"
                         )
                     ),
                     createRoomTypeDetails(
@@ -112,11 +112,11 @@ public class DataSeeder {
                         List.of("Private balcony", "Signature bath", "Premium coffee"),
                         List.of("Spa access", "Beach shuttle", "Concierge"),
                         List.of(
-                            "https://images.unsplash.com/photo-1505691938895-1758d7feb511?auto=format&fit=crop&w=1400&q=80",
-                            "https://images.unsplash.com/photo-1505691723518-36a5ac3be353?auto=format&fit=crop&w=1400&q=80",
-                            "https://images.unsplash.com/photo-1505691938895-1758d7feb511?auto=format&fit=crop&w=1400&q=80",
-                            "https://images.unsplash.com/photo-1505691723518-36a5ac3be353?auto=format&fit=crop&w=1400&q=80",
-                            "https://images.unsplash.com/photo-1505693416388-ac5ce068fe85?auto=format&fit=crop&w=1400&q=80"
+                            "https://images.unsplash.com/photo-1566665797739-1674de7a421a?auto=format&fit=crop&w=1400&q=80",
+                            "https://images.unsplash.com/photo-1571896349842-33c89424de2d?auto=format&fit=crop&w=1400&q=80",
+                            "https://images.unsplash.com/photo-1522771739844-6a9f6d5f14af?auto=format&fit=crop&w=1400&q=80",
+                            "https://images.unsplash.com/photo-1602002418082-a4443e081dd1?auto=format&fit=crop&w=1400&q=80",
+                            "https://images.unsplash.com/photo-1578683010236-d716f9a3f461?auto=format&fit=crop&w=1400&q=80"
                         )
                     ),
                     createRoomTypeDetails(
@@ -131,11 +131,11 @@ public class DataSeeder {
                         List.of("Butler service", "Private terrace", "Luxury toiletries"),
                         List.of("Airport transfer", "Private dining", "Spa priority"),
                         List.of(
-                            "https://images.unsplash.com/photo-1505691938895-1758d7feb511?auto=format&fit=crop&w=1400&q=80",
-                            "https://images.unsplash.com/photo-1505691723518-36a5ac3be353?auto=format&fit=crop&w=1400&q=80",
-                            "https://images.unsplash.com/photo-1505693416388-ac5ce068fe85?auto=format&fit=crop&w=1400&q=80",
-                            "https://images.unsplash.com/photo-1501876725168-00c445821c9e?auto=format&fit=crop&w=1400&q=80",
-                            "https://images.unsplash.com/photo-1522771739844-6a9f6d5f14af?auto=format&fit=crop&w=1400&q=80"
+                            "https://images.unsplash.com/photo-1618773928121-c32242e63f39?auto=format&fit=crop&w=1400&q=80",
+                            "https://images.unsplash.com/photo-1591088398332-8a7791972843?auto=format&fit=crop&w=1400&q=80",
+                            "https://images.unsplash.com/photo-1584132967334-10e028bd69f7?auto=format&fit=crop&w=1400&q=80",
+                            "https://images.unsplash.com/photo-1590490360182-c33d57733427?auto=format&fit=crop&w=1400&q=80",
+                            "https://images.unsplash.com/photo-1512918728675-ed5a9ecdebfd?auto=format&fit=crop&w=1400&q=80"
                         )
                     )
                 ));

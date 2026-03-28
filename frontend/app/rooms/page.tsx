@@ -1,5 +1,6 @@
 "use client";
 
+import Image from "next/image";
 import Link from "next/link";
 import { useEffect, useState } from "react";
 import { BedDouble, Ruler, Users, Waves } from "lucide-react";
@@ -58,10 +59,12 @@ export default function RoomsPage() {
             <article key={room.roomType} className="card-ocean overflow-hidden rounded-3xl">
               {/* image strip */}
               <div className="relative h-56 w-full overflow-hidden">
-                <img
-                  src={room.imageUrls?.[0]}
+                <Image
+                  src={room.imageUrls?.[0] || ""}
                   alt={room.name}
-                  className="h-full w-full object-cover transition-transform duration-500 hover:scale-105"
+                  fill
+                  className="object-cover transition-transform duration-500 hover:scale-105"
+                  unoptimized
                 />
                 {/* rate badge */}
                 <div className="absolute bottom-3 right-3 rounded-xl bg-white/90 px-3 py-1 text-sm font-bold text-slate-900 shadow backdrop-blur-sm">

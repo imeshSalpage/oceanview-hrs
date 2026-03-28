@@ -3,11 +3,13 @@ package com.example.demo.reservation;
 import java.time.Instant;
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 
 import org.springframework.stereotype.Service;
 
 import com.example.demo.common.ResourceNotFoundException;
+import com.example.demo.mail.EmailService;
 import com.example.demo.reservation.dto.ReservationCreateRequest;
 import com.example.demo.reservation.dto.ReservationResponse;
 import com.example.demo.reservation.dto.ReservationStaffCreateRequest;
@@ -15,6 +17,7 @@ import com.example.demo.reservation.dto.ReservationStatusUpdateRequest;
 import com.example.demo.room.RoomTypeDetailsRepository;
 import com.example.demo.user.CurrentUserService;
 import com.example.demo.user.User;
+import com.example.demo.user.UserRepository;
 
 @Service
 public class ReservationService {
@@ -22,14 +25,20 @@ public class ReservationService {
     private final CurrentUserService currentUserService;
     private final RoomTypeDetailsRepository roomTypeDetailsRepository;
     private final ReservationMapper reservationMapper;
+    private final EmailService emailService;
+    private final UserRepository userRepository;
 
     public ReservationService(
             ReservationRepository reservationRepository,
             CurrentUserService currentUserService,
-            RoomTypeDetailsRepository roomTypeDetailsRepository) {
+            RoomTypeDetailsRepository roomTypeDetailsRepository,
+            EmailService emailService,
+            UserRepository userRepository) {
         this.reservationRepository = reservationRepository;
         this.currentUserService = currentUserService;
         this.roomTypeDetailsRepository = roomTypeDetailsRepository;
+        this.emailService = emailService;
+        this.userRepository = userRepository;
         this.reservationMapper = new ReservationMapper();
     }
 
@@ -70,7 +79,36 @@ public class ReservationService {
         reservation.setCreatedAt(Instant.now());
         reservation.setUpdatedAt(Instant.now());
 
-        return reservationMapper.toResponse(reservationRepository.save(reservation));
+        Reservation saved = reservationRepository.save(reservation);
+        sendReservationConfirmation(saved, user);
+        return reservationMapper.toResponse(saved);
+    }
+
+    private void sendReservationConfirmation(Reservation reservation, User user) {
+        String roomTypeName = roomTypeDetailsRepository.findByRoomType(reservation.getRoomType())
+                .map(details -> details.getName())
+                .orElse(reservation.getRoomType().name());
+
+        double rate = roomTypeDetailsRepository.findByRoomType(reservation.getRoomType())
+                .map(details -> details.getRatePerNight())
+                .orElse(0.0);
+        
+        long nights = java.time.temporal.ChronoUnit.DAYS.between(reservation.getCheckInDate(), reservation.getCheckOutDate());
+        String totalAmount = String.format("LKR %,.2f", rate * nights);
+
+        emailService.sendHtmlEmail(
+            user.getEmail(),
+            "Stay Confirmed: " + reservation.getReservationNo(),
+            "reservation-confirmation",
+            Map.of(
+                "name", user.getUsername(),
+                "reservationNo", reservation.getReservationNo(),
+                "roomType", roomTypeName,
+                "checkIn", reservation.getCheckInDate().toString(),
+                "checkOut", reservation.getCheckOutDate().toString(),
+                "amount", totalAmount
+            )
+        );
     }
 
     public void cancelMyReservation(String reservationNo) {
@@ -116,7 +154,11 @@ public class ReservationService {
         reservation.setCreatedAt(Instant.now());
         reservation.setUpdatedAt(Instant.now());
 
-        return reservationMapper.toResponse(reservationRepository.save(reservation));
+        Reservation saved = reservationRepository.save(reservation);
+        userRepository.findById(request.customerId()).ifPresent(customer -> {
+            sendReservationConfirmation(saved, customer);
+        });
+        return reservationMapper.toResponse(saved);
     }
 
     public ReservationResponse updateStatus(String reservationNo, ReservationStatusUpdateRequest request) {
@@ -132,6 +174,10 @@ public class ReservationService {
     }
 
     private void validateDates(LocalDate checkIn, LocalDate checkOut) {
+        if (checkIn.isBefore(LocalDate.now())) {
+            throw new IllegalArgumentException("Check-in date cannot be in the past");
+        }
+
         if (checkOut.isBefore(checkIn) || checkOut.isEqual(checkIn)) {
             throw new IllegalArgumentException("Check-out date must be after check-in date");
         }

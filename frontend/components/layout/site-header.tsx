@@ -39,12 +39,18 @@ export function SiteHeader() {
         {/* Main nav — public links only */}
         <nav className="hidden items-center gap-1 md:flex">
           {[
-            ...(authState.isAuthenticated ? [{ href: "/dashboard", label: "Dashboard" }] : []),
+            ...(authState.role === "ADMIN" || authState.role === "RECEPTION"
+              ? [{ href: "/dashboard", label: "Dashboard" }]
+              : []),
             { href: "/rooms", label: "Rooms" },
             { href: "/experiences", label: "Experiences" },
+            { href: "/nearby-activities", label: "Nearby Activities" },
+            { href: "/nearby-places", label: "Nearby Places" },
             { href: "/contact", label: "Contact" },
             { href: "/help", label: "Help" },
-            { href: "/my-reservations", label: "My Reservations" },
+            ...(authState.role === "ADMIN" || authState.role === "RECEPTION"
+              ? []
+              : [{ href: "/my-reservations", label: "My Reservations" }]),
           ].map((link) => (
             <Link
               key={link.href}
@@ -60,9 +66,18 @@ export function SiteHeader() {
         <div className="flex items-center gap-3">
           {authState.isAuthenticated ? (
             <>
-              <div className="hidden sm:flex flex-col items-end leading-tight">
+              <div className="hidden sm:flex items-center gap-2">
                 <span className="text-sm font-semibold text-slate-900">{authState.username}</span>
-                <span className="text-xs text-sky-600 font-medium">{authState.role}</span>
+                {authState.role === "ADMIN" ? (
+                  <span className="rounded-full border border-amber-200 bg-amber-50 px-2 py-0.5 text-[11px] font-semibold uppercase tracking-wide text-amber-700">
+                    Admin
+                  </span>
+                ) : null}
+                {authState.role === "RECEPTION" ? (
+                  <span className="rounded-full border border-sky-200 bg-sky-50 px-2 py-0.5 text-[11px] font-semibold uppercase tracking-wide text-sky-700">
+                    Reception
+                  </span>
+                ) : null}
               </div>
               <Button
                 variant="outline"

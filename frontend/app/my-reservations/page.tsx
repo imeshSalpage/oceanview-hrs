@@ -25,6 +25,8 @@ export default function MyReservationsPage() {
   const guard = useRoleGuard(["CUSTOMER"], "/login");
   const [reservations, setReservations] = useState<ReservationResponse[]>([]);
   const [loading, setLoading] = useState(true);
+  const [isCancelling, setIsCancelling] = useState(false);
+  const [pendingCancelReservationNo, setPendingCancelReservationNo] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
 
   const loadReservations = async () => {
@@ -49,11 +51,15 @@ export default function MyReservationsPage() {
   }
 
   const cancelReservation = async (reservationNo: string) => {
+    setIsCancelling(true);
     try {
       await api.patch<void>(`/api/my/reservations/${reservationNo}/cancel`);
       await loadReservations();
+      setPendingCancelReservationNo(null);
     } catch (err) {
       setError(err instanceof Error ? err.message : "Failed to cancel reservation");
+    } finally {
+      setIsCancelling(false);
     }
   };
 
@@ -78,7 +84,7 @@ export default function MyReservationsPage() {
         <div className="flex flex-wrap items-center justify-between gap-4">
           <h2 className="text-xl font-semibold text-slate-900">All Reservations</h2>
           <Button asChild>
-            <Link href="/my-reservations/new"><PlusCircle className="mr-1.5 h-4 w-4" />New reservation</Link>
+            <Link href="/rooms"><PlusCircle className="mr-1.5 h-4 w-4" />New reservation</Link>
           </Button>
         </div>
 
@@ -95,7 +101,7 @@ export default function MyReservationsPage() {
               <p className="text-sm text-slate-500">No reservations yet.</p>
             ) : (
               <Table>
-                <TableHeader>
+                <TableHeader className="bg-sky-50/80 text-slate-700">
                   <TableRow>
                     <TableHead>Reservation</TableHead>
                     <TableHead>Dates</TableHead>
@@ -106,8 +112,8 @@ export default function MyReservationsPage() {
                 </TableHeader>
                 <TableBody>
                   {reservations.map((reservation) => (
-                    <TableRow key={reservation.reservationNo}>
-                      <TableCell className="font-medium">{reservation.reservationNo}</TableCell>
+                    <TableRow key={reservation.reservationNo} className="text-slate-900">
+                      <TableCell className="font-medium text-slate-900">{reservation.reservationNo}</TableCell>
                       <TableCell>
                         {formatDate(reservation.checkInDate)} → {formatDate(reservation.checkOutDate)}
                       </TableCell>
@@ -125,7 +131,7 @@ export default function MyReservationsPage() {
                           <Button
                             size="sm"
                             variant="ghost"
-                            onClick={() => cancelReservation(reservation.reservationNo)}
+                            onClick={() => setPendingCancelReservationNo(reservation.reservationNo)}
                           >
                             Cancel
                           </Button>
@@ -139,6 +145,35 @@ export default function MyReservationsPage() {
           </div>
         </div>
       </main>
+
+      {pendingCancelReservationNo ? (
+        <div className="fixed inset-0 z-40 flex items-center justify-center bg-slate-900/45 p-4">
+          <div className="card-ocean w-full max-w-md rounded-2xl p-6 shadow-2xl">
+            <h3 className="text-lg font-semibold text-slate-900">Cancel this booking?</h3>
+            <p className="mt-2 text-sm text-slate-600">
+              Reservation <span className="font-semibold text-slate-900">{pendingCancelReservationNo}</span> will be marked as cancelled.
+              This action cannot be undone.
+            </p>
+            <div className="mt-6 flex justify-end gap-2">
+              <Button
+                variant="outline"
+                onClick={() => setPendingCancelReservationNo(null)}
+                disabled={isCancelling}
+              >
+                Keep booking
+              </Button>
+              <Button
+                className="bg-rose-600 !text-white hover:bg-rose-700 hover:!text-white"
+                onClick={() => cancelReservation(pendingCancelReservationNo)}
+                disabled={isCancelling}
+              >
+                {isCancelling ? "Cancelling..." : "Yes, cancel booking"}
+              </Button>
+            </div>
+          </div>
+        </div>
+      ) : null}
+
       <SiteFooter />
     </div>
   );
