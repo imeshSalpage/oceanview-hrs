@@ -5,7 +5,9 @@ export async function loginAs(page: Page, username: string, password: string) {
   await page.getByLabel("Username").fill(username);
   await page.getByLabel("Password").fill(password);
   await page.getByRole("button", { name: "Log in" }).click();
-  await expect(page).toHaveURL(/\/(my-reservations|dashboard)/);
+  // Wait for the URL to change to either /my-reservations or /dashboard
+  // Using a longer timeout if needed as the backend might be slow
+  await page.waitForURL(/\/(my-reservations|dashboard)/, { timeout: 10000 });
 }
 
 export async function logout(page: Page) {

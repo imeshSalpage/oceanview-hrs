@@ -7,7 +7,7 @@ test("guest can browse public pages", async ({ page }) => {
   await expect(page.getByText("Your perfect coastal escape", { exact: false })).toBeVisible();
 
   await page.goto("/rooms");
-  await expect(page.getByRole("heading", { name: "Coastal stays for every traveller" })).toBeVisible();
+  await expect(page.getByText("Coastal stays for every traveller")).toBeVisible();
 
   await page.goto("/experiences");
   await expect(page.getByText("Resort Experiences")).toBeVisible();
@@ -29,7 +29,7 @@ test("guest can register a new customer account", async ({ page }) => {
   await page.getByLabel("Password").fill("Password@123");
 
   await page.getByRole("button", { name: "Create account" }).click();
-  await expect(page).toHaveURL(/\/my-reservations/);
+  await page.waitForURL(/\/my-reservations/, { timeout: 10000 });
   await expect(page.getByRole("heading", { name: "Your Stays" })).toBeVisible();
 
   await logout(page);

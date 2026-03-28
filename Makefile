@@ -13,10 +13,14 @@ frontend-lint:
 frontend-test:
 	cd frontend && npm run test:unit
 
+frontend-e2e:
+	cd frontend && npm run test:e2e
+
 test:
 	$(MAKE) api-test
 	$(MAKE) frontend-lint
 	$(MAKE) frontend-test
+	$(MAKE) frontend-e2e
 
 up:
 	docker compose up --build -d

@@ -15,10 +15,11 @@ test("reception can access staff pages and create reservation", async ({ page })
     has: page.getByText("Create reservation", { exact: true }),
   }).first();
 
-  const createInputs = createSection.locator("input");
-  await createInputs.nth(1).fill(guestName);
-  await createInputs.nth(2).fill("+94770000002");
-  await createInputs.nth(3).fill("Galle");
+  await createSection.locator('input[placeholder="NIC / Passport number"]').fill("NIC12345");
+  await createSection.locator('input[placeholder="MongoDB user id"]').fill("");
+  await createSection.locator("input").filter({ has: page.locator("..").getByText("Guest name") }).fill(guestName);
+  await createSection.locator("input").filter({ has: page.locator("..").getByText("Contact") }).fill("+94770000002");
+  await createSection.locator("input").filter({ has: page.locator("..").getByText("Address") }).fill("Galle");
 
   const dateInputs = createSection.locator('input[type="date"]');
   await dateInputs.nth(0).fill(futureDate(8));
